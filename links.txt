@@ -1,0 +1,25 @@
+problem obrotu kamery:
+http://cpp0x.pl/kursy/Kurs-OpenGL-C++/Definiowanie-sceny-3D/104
+
+orbit around object:
+https://www.opengl.org/discussion_boards/showthread.php/176504-Orbit-around-object
+
+glulookat:
+http://pages.cpsc.ucalgary.ca/~eharris/cpsc453/tut16/camera2.gif
+
+NAJPIERW GLULOOKAT, A POZNIEJ RENDERING SCENY.
+
+
+nice roation, roll explained:
+http://gamedev.stackexchange.com/questions/43588/how-to-rotate-camera-centered-around-the-cameras-position
+
+static text drawing:
+http://stackoverflow.com/questions/18847109/displaying-fixed-location-2d-text-in-a-3d-opengl-world-using-glut
+
+
+static array size:
+http://stackoverflow.com/questions/10283375/c-find-static-array-size
+
+
+ghost algorithms:
+http://gameinternals.com/post/2072558330/understanding-pac-man-ghost-behavior
