@@ -1,14 +1,25 @@
-#include "creature.h"
 
-class Ghost : Creature {
+class Ghost {
 
 private:
 
 public:
-	bool frightened;
-	double x,y,z;
-	Ghost();
+	int index;
 
-	void Move(void);
-	void Draw(void);
+	bool moving;
+	bool frightened;
+	bool chase;
+	bool scatter;
+
+	int scatterX;
+	int scatterY;
+
+	double speed;
+	double angle;
+	double x,y,z;
+	Ghost(int x, int y);
+
+	void BasicMove();
+	virtual void Move() {};
+	virtual void Draw();
 };

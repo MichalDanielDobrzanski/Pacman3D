@@ -12,9 +12,17 @@ public:
 	Pac(int x, int y);
 	~Pac();
 
-	void Move();
+	// abilities:
+	bool Consume();
+
+	// visual:
 	void Draw();
-	void Pad();
+
+	// movement:
+	void Move();
 	void Turn(int v);
+	void Pad();
+	bool WallCheck();
+	void PadAndMove(int a);
 
 };

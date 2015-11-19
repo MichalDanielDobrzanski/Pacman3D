@@ -30,6 +30,9 @@
     <ClCompile Include="creature.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
+    <ClCompile Include="ghost_red.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="pac.h">
@@ -42,6 +45,9 @@
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="creature.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="ghost_red.h">
       <Filter>Header Files</Filter>
     </ClInclude>
   </ItemGroup>

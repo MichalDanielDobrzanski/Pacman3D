@@ -80,6 +80,7 @@
     <ClCompile Include="creature.cpp" />
     <ClCompile Include="gameboard.cpp" />
     <ClCompile Include="ghost.cpp" />
+    <ClCompile Include="ghost_red.cpp" />
     <ClCompile Include="main.cpp" />
     <ClCompile Include="pac.cpp" />
   </ItemGroup>
@@ -87,6 +88,7 @@
     <ClInclude Include="creature.h" />
     <ClInclude Include="gameboard.h" />
     <ClInclude Include="ghost.h" />
+    <ClInclude Include="ghost_red.h" />
     <ClInclude Include="pac.h" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />

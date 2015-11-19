@@ -5,9 +5,12 @@
 #include <GL/gl.h>
 #include "glut.h"
 #include "pac.h"
+#include "ghost_red.h"
 #include "gameboard.h"
 #include <iostream>
 #include <string>
+
+static const int ghosts_count = 4;
 
 // board game:
 GameBoard *board;
@@ -15,6 +18,9 @@ GameBoard *board;
 // mr. pacman
 Pac *pacman;
 bool pacFollowed = false;
+
+// ghosts
+Ghost *ghosts[ghosts_count];
 
 // mouse
 GLdouble dx = 0;
@@ -174,44 +180,35 @@ void display()
 	if (pacman->moving)
 		pacman->Move();	
 
-	// wall check. Badz blisko szyny, aby go wykonac.
-	//std::cout << "pac: " << pacman->x << ", " << pacman->y << std::endl;
-	if (((pacman->angle == 0 && board->isWall((int)(pacman->x + 1),(int)pacman->y)) ||
-		(pacman->angle == 180 && board->isWall((int)(pacman->x - 1),(int)pacman->y)) ||
-		(pacman->angle == 90 && board->isWall((int)pacman->x,(int)(pacman->y + 1))) ||
-		(pacman->angle == 270 && board->isWall((int)pacman->x,(int)(pacman->y - 1))))
-		&& abs(pacman->x - (int)pacman->x) < 0.1
-		&& abs(pacman->y - (int)pacman->y < 0.1)) 
-	{
-		pacman->moving = false;
-		// padding
-		pacman->x = (int)pacman->x;
-		pacman->y = (int)pacman->y;
-	}
+	// wall check stops movement
+	pacman->WallCheck();
 
 	// coins eating
-	if (pacman->x - (int)pacman->x < 0.4 &&  pacman->angle == 180) // going left
+	if (pacman->Consume())
+		board->coinsCount--;
+
+	// ghosts movement
+
+	// red ghost targets packman coordinates while in chase mode
+	if (((GhostRed*)ghosts[0])->chase)
 	{
-		board->consume((int)pacman->x,(int)pacman->y);
-	} else 
-	if (pacman->x - (int)pacman->x > 0.6 && pacman->angle == 0) // goin right
+		((GhostRed*)ghosts[0])->targetX = pacman->x;
+		((GhostRed*)ghosts[0])->targetY = pacman->y;
+	}
+	for (int i = 0; i < ghosts_count; i++)
 	{
-		board->consume((int)pacman->x + 1,(int)pacman->y);
-	} else 
-	if (pacman->y - (int)pacman->y < 0.4 && pacman->angle == 270) // goin bottom
-	{
-		board->consume((int)pacman->x,(int)pacman->y);
-	} else 
-	if (pacman->y - (int)pacman->y > 0.6 && pacman->angle == 90) // goin top
-	{
-		board->consume((int)pacman->x,(int)pacman->y + 1);
+		ghosts[i]->moving = true;
+		ghosts[i]->Move();
 	}
 
-
-	// actual pacman and board drawing
+	// actual pacman, ghosts and board drawing
 	glPushMatrix();
 		pacman->Draw();
 		board->Draw();
+		for (int i = 0; i < ghosts_count; i++)
+		{
+			ghosts[i]->Draw();
+		}
 	glPopMatrix();
 
 	// screen information
@@ -310,112 +307,23 @@ void mouse(int button, int state, int x, int y)
 }
 
 void special( int key, int x, int y )
-{		
-	// (int)pacman->y - pacman->y > -0.1 - warunek na animacje. Akceptuj tylko male odchylki od szyn.
-	// Potrzebne, aby packman trzymal sie szyn, a nie z nich wychodzil sobie.
-	// Skret w lewo mozliwy tylko, gdy jestesmy blisko jakies szyny y = [1,DIM_Y -1]
+{
 	switch( key )
     {
 	case GLUT_KEY_LEFT:
-		if (pacman->angle != 180)
-		{ // kiedy idziemy z gory:
-			if ((pacman->y - (int)pacman->y > 0.6) && !board->isWall((int)pacman->x - 1,(int)pacman->y - 1))
-			{
-				pacman->y += 0.4;
-			} 
-
-			if (!board->isWall((int)pacman->x - 1,(int)pacman->y))
-			{
-				if (pacman->angle != 0) 
-				{
-					pacman->Pad();
-				}
-				pacman->moving = true;
-				pacman->angle = 180;
-			}
-		}
-
-
+		pacman->Turn(180);
         break;
 
     case GLUT_KEY_RIGHT:   
-		if (pacman->angle != 0)
-		{
-			if ((pacman->y - (int)pacman->y > 0.6) && !board->isWall((int)pacman->x + 1,(int)pacman->y - 1))
-			{
-				pacman->y += 0.4;
-			} 
-
-			if (!board->isWall((int)pacman->x + 1,(int)pacman->y))
-			{
-				if (pacman->angle != 180) 
-				{
-					pacman->Pad();
-				}
-				pacman->moving = true;
-				pacman->angle = 0;
-			}
-		}
-
-		//if (!board->isWall((int)pacman->x + 1,(int)pacman->y) && pacman->y - (int)pacman->y < 0.3  && pacman->angle != 0)
-		//{
-		//	if (pacman->angle != 180) {
-		//		pacman->Pad();
-		//	}
-		//	pacman->moving = true;
-		//	pacman->angle = 0;
-		//}
+		pacman->Turn(0);
         break;
 
     case GLUT_KEY_UP:
-		//std::cout << "pac: " << pacman->x << ", " << pacman->y << " abs "<< pacman->x - (int)pacman->x << std::endl;
-		std::cout << "diffX: " << pacman->x - (int)pacman->x << std::endl;
-		if (pacman->angle != 90)
-		{
-			if ((pacman->x - (int)pacman->x > 0.6) && !board->isWall((int)pacman->x + 1,(int)pacman->y + 1))
-			{
-				pacman->x += 0.4;
-			} 
-
-			if (!board->isWall((int)pacman->x,(int)pacman->y + 1))
-			{
-				if (pacman->angle != 270) 
-				{
-					pacman->Pad();
-				}
-				pacman->moving = true;
-				pacman->angle = 90;
-			}
-		}
+		pacman->Turn(90);
         break;
        
     case GLUT_KEY_DOWN:
-		if (pacman->angle != 270)
-		{
-			if ((pacman->x - (int)pacman->x > 0.6) && !board->isWall((int)pacman->x + 1,(int)pacman->y - 1))
-			{
-				pacman->x += 0.4;
-			} 
-
-			if (!board->isWall((int)pacman->x,(int)pacman->y - 1))
-			{
-				if (pacman->angle != 90) 
-				{
-					pacman->Pad();
-				}
-				pacman->moving = true;
-				pacman->angle = 270;
-			}
-		}
-
-		//if (!board->isWall((int)pacman->x,(int)pacman->y - 1) && pacman->x - (int)pacman->x < 0.5  && pacman->angle != 270)
-		//{
-		//	if (pacman->angle != 90) {
-		//		pacman->Pad();
-		//	}
-		//	pacman->moving = true;
-		//	pacman->angle = 270;
-		//}
+		pacman->Turn(270);
         break;
     }
 
@@ -490,6 +398,13 @@ int main(int argc, char** argv)
 	// inicjalizacja obiektow openGL
 	pacman = new Pac(15,2);
 	board = new GameBoard();
+	for (int i = 0; i < ghosts_count; i++)
+	{
+		if (i == 0)
+			ghosts[i] = new GhostRed(15, 10);
+		else
+			ghosts[i] = new Ghost(13 + i , 8);
+	}
 
 	init();
 

@@ -4,6 +4,7 @@
 #include "pac.h"
 #include "gameboard.h"
 #include "GLUT.H"
+#include <iostream>
 
 Pac::Pac(int x_b, int y_b)
 {
@@ -44,44 +45,135 @@ void Pac::Pad()
 	y = (int)y;
 }
 
-void Pac::Turn(int v)//, GameBoard* board)
+
+// true if COIN was eaten
+bool ConsumeMap(int x, int y)
 {
-	double dim_var; // zmienna przyjmujaca wartosci x dla ruchu w gore/w dol lub wartosci y dla ruchu w lewo/w prawo
-	switch (v)
+	int idx = GameBoard::DIM_Y - y - 1;
+	if (GameBoard::initial_map[idx][x] == 0)
 	{
-	case 0: // going left
-		dim_var = y;
-		break;
-	case 90: // going top
-		dim_var = x;
-		break;
-
-	case 180: // goin right
-		dim_var = y;
-		break;
-
-	case 270: // going bottom
-		dim_var = x;
-		break;
-	default:
-		break;
+		// consume a coin (-1 value indicates eaten)
+		GameBoard::initial_map[idx][x] = -1;
+		return true;
+	} else
+	if (GameBoard::initial_map[idx][x] == 3)
+	{
+		// consume energizer
+		GameBoard::initial_map[idx][x] = -1;
 	}
+	return false;
+}
 
-	if (angle != v)
+// true if COIN (not energizer) was eaten
+bool Pac::Consume()
+{
+	if (x - (int)x < 0.4 &&  angle == 180) // going left
 	{
-		if ((dim_var - (int)dim_var > 0.5)) //&& //!board->isWall((int)x + 1,(int)y + 1))
-		{
-			x += 1;
-		} 
+		if (ConsumeMap((int)x,(int)y))
+			return true;
+	} else 
+	if (x - (int)x >= 0.6 && angle == 0) // goin right
+	{
+		if(ConsumeMap((int)x + 1,(int)y))
+			return true;
+	} else 
+	if (y - (int)y < 0.4 && angle == 270) // goin bottom
+	{
+		if(ConsumeMap((int)x,(int)y))
+			return true;
+	} else 
+	if (y - (int)y >= 0.6 && angle == 90) // goin top
+	{
+		if (ConsumeMap((int)x,(int)y + 1))
+			return true;
+	}
+	return false;
+}
 
-		//if (!board->isWall((int)x,(int)y + 1))
+// Helping function which accesses the initial_map defined in GameBoard.
+bool isWall(int x, int y)
+{
+	int idx = GameBoard::DIM_Y - y - 1;
+	//std::cout << "accessing: " <<  idx << "," << x << ", v: " << walls_map[idx][x] << std::endl;
+	return (GameBoard::initial_map[idx][x] == 1);
+}
+
+// check whether PackMan can go to the next tile he is facing.
+bool Pac::WallCheck()
+{
+	if (((angle == 0   && isWall((int)(x + 1),(int)y))        || // moving right
+		( angle == 180 && isWall((int)(x - 1),(int)y))        || // moving left
+		( angle == 90  && isWall((int) x     ,(int)(y + 1)))  || // moving top
+		( angle == 270 && isWall((int) x     ,(int)(y - 1)))) && // moving bottom
+		abs(x - (int)x) < 0.1 && abs(y - (int)y < 0.1))	
+	{
+		moving = false;
+		// padding
+		x = (int)x;
+		y = (int)y;
+		return false;
+	}
+	return true;
+}
+
+// helper function
+void Pac::PadAndMove(int a)
+{
+	if (angle != (a + 180) % 360)
+	{
+		Pad();
+	}
+	moving = true;
+	angle = a;
+}
+
+// TODO: write an algorithm
+void Pac::Turn(int nangle) // new angle
+{
+	//std::cout << "angle " << angle << " New angle " << nangle << std::endl;
+	if (angle != nangle) // do not consider the same direction
+	{
+		if (nangle == 180) // wanting to go left
 		{
-			if (angle != 270) 
+			if ((y - (int)y >= 0.6) && !isWall((int)x - 1,(int)y - 1))
+			{ // going from top
+				y += (1 - (y - (int)y));
+			} 
+
+			if (!isWall((int)x - 1,(int)y))
+				PadAndMove(nangle);
+
+		} else
+		if (nangle == 0) // wanting to go right
+		{
+			if ((y - (int)y >= 0.6) && !isWall((int)x + 1,(int)y - 1))
+			{ // going from top
+				y += (1 - (y - (int)y));
+			} 
+
+			if (!isWall((int)x + 1,(int)y))
+				PadAndMove(nangle);
+
+		} else
+		if (nangle == 90) // wanting to go top
+		{
+			if ((x - (int)x >= 0.6) && !isWall((int)x + 1,(int)y + 1))
+			{ // going from left
+				x += (1 - (x - (int)x));
+			} 
+
+			if (!isWall((int)x,(int)y + 1))
+				PadAndMove(nangle);
+
+		} else
+		if (nangle == 270) // wanting to go bottom
+		{ // going from left
+			if ((x - (int)x >= 0.6) && !isWall((int)x + 1,(int)y - 1))
 			{
-					Pad();
+				x += (1 - (x - (int)x));
 			}
-			moving = true;
-			angle = 90;
+			if (!isWall((int)x,(int)y - 1))
+				PadAndMove(nangle);
 		}
 	}
 }
