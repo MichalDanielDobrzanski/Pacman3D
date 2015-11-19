@@ -53,9 +53,22 @@ bool Ghost::WallCheck(int agle)
 	if (agle == 180)
 		return GameBoard::isWall((int)x - 1,(int)y);
 	if (agle == 90)
-		return GameBoard::isWall((int)x    ,(int)y + 1);
+		return GameBoard::isWall((int)x,(int)y + 1);
 	if (agle == 270)
-		return GameBoard::isWall((int)x    ,(int)y - 1);
+		return GameBoard::isWall((int)x,(int)y - 1);
+}
+
+// Gets the next Tile coordinates based on angle
+std::pair<int,int> Ghost::NextTile(int agle)
+{
+	if (agle == 0)
+		return std::make_pair<int,int>((int)x + 1,(int)y);
+	if (agle == 180)
+		return std::make_pair<int,int>((int)x - 1,(int)y);
+	if (agle == 90)
+		return std::make_pair<int,int>((int)x,(int)y + 1);
+	if (agle == 270)
+		return std::make_pair<int,int>((int)x,(int)y - 1);
 }
 
 
@@ -99,16 +112,19 @@ double Ghost::GetRightAngle(double angdir)
 		return angdir - 90;
 }
 
-// checks whether the ghost is at the intersection. If not, then the rule is simple - it is at the turn.
+// checks whether the ghost is at the turn.
 // true - a decision has been made.
-bool Ghost::isAtIntersection()
+bool Ghost::isAtTurn()
 {
 	// the count of possibilies we have. We can always go the reverse way.
-	int counter = 4;
-	//std::cout << "X: " << x << std::endl;
+	int counter = 2;
+	if (WallCheck(GetLeftAngle(angle)))
+		counter--;
+	if (WallCheck(GetRightAngle(angle)))
+		counter--;
 
-	// take a look around and see how many possibilities I have	
-	if (abs(x - (int)x) < 0.1 && abs(y - (int)y < 0.1))
+	// When counter is 1 this means we have just one option
+	if (counter == 1 && abs(x - (int)x) < 0.1 && abs(y - (int)y < 0.1))
 	{
 		moving = false;
 

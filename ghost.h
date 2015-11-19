@@ -1,3 +1,4 @@
+#include <utility>
 
 class Ghost {
 
@@ -27,9 +28,10 @@ public:
 	bool WallCheck(int a);
 	bool WallStop();
 
-	bool isAtIntersection();
+	bool isAtTurn();
 
 	double Rotate(double chng);
+	std::pair<int,int> NextTile(int angle);
 
 	double GetLeftAngle(double angdir);
 	double GetRightAngle(double angdir);
