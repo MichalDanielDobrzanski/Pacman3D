@@ -23,8 +23,11 @@ Pac::~Pac()
 
 void Pac::Move(void)
 {
-	x +=  speed*cos(M_PI/180*angle); // dodawany jakis staly interwal
-	y +=  speed*sin(M_PI/180*angle);
+	if (moving) 
+	{
+		x +=  speed*cos(M_PI/180*angle); // dodawany jakis staly interwal
+		y +=  speed*sin(M_PI/180*angle);
+	}
 }
 
 void Pac::Draw() 
@@ -90,21 +93,14 @@ bool Pac::Consume()
 	return false;
 }
 
-// Helping function which accesses the initial_map defined in GameBoard.
-bool isWall(int x, int y)
-{
-	int idx = GameBoard::DIM_Y - y - 1;
-	//std::cout << "accessing: " <<  idx << "," << x << ", v: " << walls_map[idx][x] << std::endl;
-	return (GameBoard::initial_map[idx][x] == 1);
-}
 
 // check whether PackMan can go to the next tile he is facing.
 bool Pac::WallCheck()
 {
-	if (((angle == 0   && isWall((int)(x + 1),(int)y))        || // moving right
-		( angle == 180 && isWall((int)(x - 1),(int)y))        || // moving left
-		( angle == 90  && isWall((int) x     ,(int)(y + 1)))  || // moving top
-		( angle == 270 && isWall((int) x     ,(int)(y - 1)))) && // moving bottom
+	if (((angle == 0   && GameBoard::isWall((int)(x + 1),(int)y))        || // moving right
+		( angle == 180 && GameBoard::isWall((int)(x - 1),(int)y))        || // moving left
+		( angle == 90  && GameBoard::isWall((int) x     ,(int)(y + 1)))  || // moving top
+		( angle == 270 && GameBoard::isWall((int) x     ,(int)(y - 1)))) && // moving bottom
 		abs(x - (int)x) < 0.1 && abs(y - (int)y < 0.1))	
 	{
 		moving = false;
@@ -135,44 +131,44 @@ void Pac::Turn(int nangle) // new angle
 	{
 		if (nangle == 180) // wanting to go left
 		{
-			if ((y - (int)y >= 0.6) && !isWall((int)x - 1,(int)y - 1))
+			if ((y - (int)y >= 0.6) && !GameBoard::isWall((int)x - 1,(int)y - 1))
 			{ // going from top
 				y += (1 - (y - (int)y));
 			} 
 
-			if (!isWall((int)x - 1,(int)y))
+			if (!GameBoard::isWall((int)x - 1,(int)y))
 				PadAndMove(nangle);
 
 		} else
 		if (nangle == 0) // wanting to go right
 		{
-			if ((y - (int)y >= 0.6) && !isWall((int)x + 1,(int)y - 1))
+			if ((y - (int)y >= 0.6) && !GameBoard::isWall((int)x + 1,(int)y - 1))
 			{ // going from top
 				y += (1 - (y - (int)y));
 			} 
 
-			if (!isWall((int)x + 1,(int)y))
+			if (!GameBoard::isWall((int)x + 1,(int)y))
 				PadAndMove(nangle);
 
 		} else
 		if (nangle == 90) // wanting to go top
 		{
-			if ((x - (int)x >= 0.6) && !isWall((int)x + 1,(int)y + 1))
+			if ((x - (int)x >= 0.6) && !GameBoard::isWall((int)x + 1,(int)y + 1))
 			{ // going from left
 				x += (1 - (x - (int)x));
 			} 
 
-			if (!isWall((int)x,(int)y + 1))
+			if (!GameBoard::isWall((int)x,(int)y + 1))
 				PadAndMove(nangle);
 
 		} else
 		if (nangle == 270) // wanting to go bottom
 		{ // going from left
-			if ((x - (int)x >= 0.6) && !isWall((int)x + 1,(int)y - 1))
+			if ((x - (int)x >= 0.6) && !GameBoard::isWall((int)x + 1,(int)y - 1))
 			{
 				x += (1 - (x - (int)x));
 			}
-			if (!isWall((int)x,(int)y - 1))
+			if (!GameBoard::isWall((int)x,(int)y - 1))
 				PadAndMove(nangle);
 		}
 	}

@@ -30,7 +30,12 @@ void GhostRed::Draw()
 // Blinky "shadow" movement algorithm
 void GhostRed::Move() 
 {
+	// Regular Blinky Movement
 	BasicMove();
+
+
+	// check whether Blinky is at the intersection or ar the regular turn:
+	isAtIntersection();
 
 	if (chase) 
 	{

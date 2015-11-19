@@ -163,7 +163,6 @@ void display()
 	// http://gamedev.stackexchange.com/questions/43588/how-to-rotate-camera-centered-around-the-cameras-position
 	// M_PI /2 - przesuniecie fazowe w celu dobrego wyswietlenia poczatkowego planszy
 	// implementacja operacji: ROLL (theta) (zla!) oraz PITCH (phi) ('w', 's' jest ok)
-
 	if (pacFollowed) 
 	{
 		gluLookAt(pacman->x, pacman->y, pacman->z + centerDistance, pacman->x, pacman->y, pacman->z, 0, 1, 0);
@@ -177,8 +176,7 @@ void display()
 	}
 
 	// move the pacman
-	if (pacman->moving)
-		pacman->Move();	
+	pacman->Move();	
 
 	// wall check stops movement
 	pacman->WallCheck();
@@ -188,17 +186,17 @@ void display()
 		board->coinsCount--;
 
 	// ghosts movement
-
-	// red ghost targets packman coordinates while in chase mode
+	
 	if (((GhostRed*)ghosts[0])->chase)
 	{
-		((GhostRed*)ghosts[0])->targetX = pacman->x;
-		((GhostRed*)ghosts[0])->targetY = pacman->y;
+		// Blinky targets packman current tile coordinates while in chase mode
+		((GhostRed*)ghosts[0])->targetX = (int)pacman->x;
+		((GhostRed*)ghosts[0])->targetY = (int)pacman->y;
 	}
 	for (int i = 0; i < ghosts_count; i++)
 	{
-		ghosts[i]->moving = true;
 		ghosts[i]->Move();
+		//ghosts[i]->WallStop();
 	}
 
 	// actual pacman, ghosts and board drawing

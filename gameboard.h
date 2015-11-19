@@ -20,7 +20,7 @@ public:
 	void Draw();
 
 	bool consume(int x, int y);
-	bool isWall(int x, int y);
+	static bool isWall(int x, int y);
 	
 
 
