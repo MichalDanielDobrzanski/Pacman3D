@@ -10,7 +10,7 @@ Ghost::Ghost(int tx, int ty)
 {
 	angle = 180; // initially all ghosts move to the left
 	moving = true;
-	speed = 0.07;
+	speed = 0.02;
 
 
 	x = tx;
@@ -112,43 +112,98 @@ double Ghost::GetRightAngle(double angdir)
 		return angdir - 90;
 }
 
-// checks whether the ghost is at the turn.
-// true - a decision has been made.
-bool Ghost::isAtTurn()
+// Make a turn at the turn.
+bool Ghost::AtTurn()
 {
-	// the count of possibilies we have. We can always go the reverse way.
-	int counter = 2;
+	if (abs(x - (int)x) < 0.05 && abs(y - (int)y < 0.05))
+	{
+		if (WallCheck(angle)) // there is a wall in front of me
+		{
+			if (WallCheck(GetLeftAngle(angle))) // there is a wall on my left
+			{
+				std::cout << "Blinky: Lets go right. " << std::endl;	
+				angle = GetRightAngle(angle); // yep, right.
+			}
+			else
+			{
+				std::cout << "Blinky: Lets go left. " << std::endl;
+				angle = GetLeftAngle(angle);
+			}
+			x = (int)x;
+			y = (int)y;
+			return true;
+		}
+	}
+	return false;
+}
+
+double Ghost::TargetPythagoras(double x, double y)
+{
+	return sqrt(abs(x * x - targetX * targetX) + abs(y * y - targetY * targetY));
+}
+
+bool Ghost::isAtIntersection()
+{
+	if (abs(x - (int)x) < 0.05 && abs(y - (int)y < 0.05))
+	{
+	int counter = 3;
+	if (WallCheck(angle))
+		counter--;
 	if (WallCheck(GetLeftAngle(angle)))
 		counter--;
 	if (WallCheck(GetRightAngle(angle)))
 		counter--;
 
-	// When counter is 1 this means we have just one option
-	if (counter == 1 && abs(x - (int)x) < 0.1 && abs(y - (int)y < 0.1))
+	if (counter > 1)
 	{
+		std::cout << "Intersection." << angle << std::endl;
+		return true;
+	}
+	else
+		return false;
+	}
+	else
+		return false;
+}
+
+
+void Ghost::IntersectionDecision()
+{
+	if (abs(x - (int)x) < 0.05 && abs(y - (int)y < 0.05))
+	{
+		double dist = 1000;
+		double newAngle = -1;
+
 		moving = false;
 
-		//std::cout << "My angle: " << angle << " Angles around me: " <<  (int)Rotate(90) << ", " << (int)Rotate(-90) << std::endl;
-		if (WallCheck(angle)) 
-		{ // block in front of me
-			//std::cout << " Hit wall " << std::endl;		
-			// turn left or right
-			if (WallCheck(GetLeftAngle(angle))) // there is a wall on my left
-			{
-				std::cout << "Blinky: Lets go right. " << std::endl;	
-				angle = GetRightAngle(angle); // lets go right then
-				return true;
-			}
-			else
-			{
-				std::cout << "Blinky: Lets go left. " << std::endl;
-				angle = GetLeftAngle(angle); // left
-				return true;
-			}
-			//std::cout << "New direction: " << angle << std::endl;
+		if (!WallCheck(angle))
+		{
+			double opt = TargetPythagoras(NextTile(angle).first,NextTile(angle).second);
+			if (opt < dist)
+				dist = opt;
 		}
-		moving = true;
 
+		if (!WallCheck(GetLeftAngle(angle)))
+		{
+			double opt = TargetPythagoras(NextTile(GetLeftAngle(angle)).first,NextTile(GetLeftAngle(angle)).second);
+			if (opt < dist)
+			{
+				dist = opt;
+				angle = GetLeftAngle(angle);
+			}
+		}
+
+		if (!WallCheck(GetRightAngle(angle)))
+		{
+			double opt = TargetPythagoras(NextTile(GetRightAngle(angle)).first,NextTile(GetRightAngle(angle)).second);
+			if (opt < dist)
+			{
+				dist = opt;
+				angle = GetRightAngle(angle);
+			}
+		}
+
+		std::cout << "Blinky: Intesection. x: " << x << std::endl;
+		std::cout << "Blinky: My target: " << targetX << ", " << targetY << std::endl;
 	}
-	return false;
 }

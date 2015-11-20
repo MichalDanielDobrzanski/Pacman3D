@@ -36,52 +36,13 @@ void GhostRed::Move()
 	// Regular Blinky Movement
 	BasicMove();
 
+	AtTurn();
 
-	// check whether Blinky is at the regular turn:
-	isAtTurn();
+	//std::cout << "Blinky angle: " << angle << std::endl;
+	isAtIntersection();
+	//	std::cout << "TRUE! " << angle << std::endl;
+	
+	//else
+			
 
-	// as for the intersection, make a decision based on his status
-	if (chase) 
-	{
-		// he pursuits PackMan
-		if (WallCheck(angle))
-		{
-			int counter = 3;
-			if (!WallCheck(angle)) // no walls on the left
-				counter--;
-			if (!WallCheck(GetLeftAngle(angle))) // no walls on the left
-				counter--;
-			if (!WallCheck(GetRightAngle(angle))) // no walls on the right
-				counter--;
-
-			if (counter == 1 && abs(x - (int)x) < 0.1 && abs(y - (int)y < 0.1))
-			{ // then this is surely an 2-outs intersection. Now pick the shortest way to the PackMan!
-
-				std::cout << "Blinky: Intesection. x: " << x << std::endl;
-
-				std::pair<int,int> optA = NextTile(GetLeftAngle(angle));  // left?
-				std::pair<int,int> optB = NextTile(GetRightAngle(angle)); // or right?
-
-				// figure it out!
-				double optionA = abs(optA.first * optA.first - targetX * targetX) 
-					+ abs(optA.second * optA.second  - targetY * targetY);
-				double optionB = abs(optB.first * optB.first - targetX * targetX) 
-					+ abs(optB.second * optB.second  - targetY * targetY);
-				if (optionA <= optionB)
-					angle = GetLeftAngle(angle);
-				else
-					angle = GetRightAngle(angle);
-
-			}
-		}
-	} else
-	if (scatter)
-	{
-
-
-	} else
-	if (frightened)
-	{
-
-	}
 }

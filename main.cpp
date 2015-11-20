@@ -190,8 +190,8 @@ void display()
 	if (((GhostRed*)ghosts[0])->chase)
 	{
 		// Blinky targets packman current tile coordinates while in chase mode
-		((GhostRed*)ghosts[0])->targetX = (int)pacman->x;
-		((GhostRed*)ghosts[0])->targetY = (int)pacman->y;
+		(ghosts[0])->targetX = (int)pacman->x;
+		(ghosts[0])->targetY = (int)pacman->y;
 	}
 	for (int i = 0; i < ghosts_count; i++)
 	{
