@@ -6,15 +6,15 @@
 #include "GLUT.H"
 #include <iostream>
 
-Ghost::Ghost(int tx, int ty)
+Ghost::Ghost(int tx, int ty) : Creature(tx,ty)
 {
 	angle = 180; // initially all ghosts move to the left
-	moving = true;
-	speed = 0.02;
-
+	speed = 0.05;
+	inter = false;
 
 	x = tx;
 	y = ty;
+
 	if (index == 1)
 	{
 		// red ghost
@@ -35,16 +35,6 @@ void Ghost::Draw()
 }
 
 
-// basic movement algorithm which applies to every ghost
-void Ghost::BasicMove()
-{
-	// ghost regular movement
-	if (moving)
-	{
-		x +=  speed*cos(M_PI/180*angle); // dodawany jakis staly interwal
-		y +=  speed*sin(M_PI/180*angle);
-	}
-}
 
 bool Ghost::WallCheck(int agle)
 {
@@ -112,6 +102,12 @@ double Ghost::GetRightAngle(double angdir)
 		return angdir - 90;
 }
 
+
+void Ghost::Move()
+{
+	Creature::Move();
+}
+
 // Make a turn at the turn.
 bool Ghost::AtTurn()
 {
@@ -137,33 +133,25 @@ bool Ghost::AtTurn()
 	return false;
 }
 
-double Ghost::TargetPythagoras(double x, double y)
+double Ghost::TargetPythagoras(int x, int y)
 {
-	return sqrt(abs(x * x - targetX * targetX) + abs(y * y - targetY * targetY));
+	return sqrt(abs(x * x - targetTileX * targetTileX) + abs(y * y - targetTileY * targetTileY));
 }
 
 bool Ghost::isAtIntersection()
 {
-	if (abs(x - (int)x) < 0.05 && abs(y - (int)y < 0.05))
+	int idx = GameBoard::DIM_Y - y - 1;
+	if (!inter && GameBoard::initial_map[idx][(int)x] == 5)
 	{
-	int counter = 3;
-	if (WallCheck(angle))
-		counter--;
-	if (WallCheck(GetLeftAngle(angle)))
-		counter--;
-	if (WallCheck(GetRightAngle(angle)))
-		counter--;
-
-	if (counter > 1)
-	{
-		std::cout << "Intersection." << angle << std::endl;
-		return true;
+		if (abs(x - (int)x) < 0.06 && abs(y - (int)y < 0.06))
+		{
+		std::cout << "Intersection. " << std::endl;
+		inter = true;
+		}
 	}
 	else
-		return false;
-	}
-	else
-		return false;
+		inter = false;
+	return true;
 }
 
 
@@ -204,6 +192,6 @@ void Ghost::IntersectionDecision()
 		}
 
 		std::cout << "Blinky: Intesection. x: " << x << std::endl;
-		std::cout << "Blinky: My target: " << targetX << ", " << targetY << std::endl;
+		//std::cout << "Blinky: My target: " << targetX << ", " << targetY << std::endl;
 	}
 }

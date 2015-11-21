@@ -27,10 +27,10 @@
     <ClCompile Include="ghost.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="creature.cpp">
+    <ClCompile Include="ghost_red.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="ghost_red.cpp">
+    <ClCompile Include="creature.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
   </ItemGroup>
@@ -44,10 +44,10 @@
     <ClInclude Include="ghost.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="creature.h">
+    <ClInclude Include="ghost_red.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="ghost_red.h">
+    <ClInclude Include="creature.h">
       <Filter>Header Files</Filter>
     </ClInclude>
   </ItemGroup>

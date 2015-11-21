@@ -33,16 +33,24 @@ void GhostRed::Draw()
 // Blinky "shadow" movement algorithm
 void GhostRed::Move() 
 {
+
 	// Regular Blinky Movement
-	BasicMove();
+	Ghost::Move();
+
+	isAtIntersection();
 
 	AtTurn();
 
 	//std::cout << "Blinky angle: " << angle << std::endl;
-	isAtIntersection();
+	
 	//	std::cout << "TRUE! " << angle << std::endl;
 	
 	//else
 			
 
+}
+
+void GhostRed::onTileChange()
+{
+	//std::cout << "Blinky current tile: " << tileX << ", " << tileY << std::endl;
 }

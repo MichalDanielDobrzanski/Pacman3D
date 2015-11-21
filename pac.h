@@ -1,14 +1,10 @@
 #include "creature.h"
 
-class Pac : Creature {
+class Pac : public Creature {
 
-private:
-	double speed;
+
 public:
-	int lives;
-	bool moving;
-	double angle;
-	double x,y,z; // wspolrzedne do poruszania sie po planszy
+	double z;
 	Pac(int x, int y);
 	~Pac();
 
@@ -19,10 +15,12 @@ public:
 	void Draw();
 
 	// movement:
-	void Move();
 	void Turn(int v);
 	void Pad();
 	bool WallCheck();
 	void PadAndMove(int a);
+
+	// info:
+	void onTileChange() override;
 
 };

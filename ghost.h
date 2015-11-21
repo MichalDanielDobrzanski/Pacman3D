@@ -1,38 +1,34 @@
 #include <utility>
+#include "creature.h"
 
-class Ghost {
+class Ghost : public Creature {
 
 private:
 
 public:
 	int index;
 
-	bool moving;
 	bool frightened;
 	bool chase;
 	bool scatter;
 
-	int targetX;
-	int targetY;
+	int targetTileX;
+	int targetTileY;
 
 	int scatterX;
 	int scatterY;
 
-	double speed;
-	double angle;
-	double x,y,z;
-
 	Ghost(int x, int y);
 
-	void BasicMove();
-	// specific ghost movement
-	virtual void Move() {};
+	virtual void Move(); // this ghost movement will be replaced by the specific one.
+	virtual void Draw(); // unique ghost look
 
 	bool WallCheck(int a);
 	bool WallStop();
 
 	bool AtTurn();
-
+	
+	int inter;
 	bool isAtIntersection();
 	void IntersectionDecision();
 
@@ -41,7 +37,7 @@ public:
 
 	double GetLeftAngle(double angdir);
 	double GetRightAngle(double angdir);
-	double TargetPythagoras(double x, double y);
+	double TargetPythagoras(int x, int y);
 
-	virtual void Draw();
+	
 };

@@ -6,29 +6,17 @@
 #include "GLUT.H"
 #include <iostream>
 
-Pac::Pac(int x_b, int y_b)
+Pac::Pac(int tx, int ty) : Creature(tx,ty)
 {
-	x = x_b;
-	y = y_b;
 	z = 0;
 	speed = 0.07;
-	moving = true;
 	angle = 0;
+	moving = true;
+
 	lives = 3;
 }
 
-Pac::~Pac()
-{
-}
-
-void Pac::Move(void)
-{
-	if (moving) 
-	{
-		x +=  speed*cos(M_PI/180*angle); // dodawany jakis staly interwal
-		y +=  speed*sin(M_PI/180*angle);
-	}
-}
+Pac::~Pac() { }
 
 void Pac::Draw() 
 {
@@ -41,19 +29,12 @@ void Pac::Draw()
 
 }
 
-void Pac::Pad()
-{
-	// padding
-	x = (int)x;
-	y = (int)y;
-}
-
 
 // true if COIN was eaten
 bool ConsumeMap(int x, int y)
 {
 	int idx = GameBoard::DIM_Y - y - 1;
-	if (GameBoard::initial_map[idx][x] == 0)
+	if (GameBoard::initial_map[idx][x] == 0 || GameBoard::initial_map[idx][x] == 5)
 	{
 		// consume a coin (-1 value indicates eaten)
 		GameBoard::initial_map[idx][x] = -1;
@@ -117,7 +98,7 @@ void Pac::PadAndMove(int a)
 {
 	if (angle != (a + 180) % 360)
 	{
-		Pad();
+		Creature::Pad();
 	}
 	moving = true;
 	angle = a;
@@ -172,4 +153,9 @@ void Pac::Turn(int nangle) // new angle
 				PadAndMove(nangle);
 		}
 	}
+}
+
+void Pac::onTileChange()
+{
+	std::cout << "Packman tile: " << tileX << ", " << tileY << std::endl;
 }

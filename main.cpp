@@ -4,6 +4,7 @@
 #include <windows.h>
 #include <GL/gl.h>
 #include "glut.h"
+#include "creature.h"
 #include "pac.h"
 #include "ghost_red.h"
 #include "gameboard.h"
@@ -190,12 +191,12 @@ void display()
 	if (((GhostRed*)ghosts[0])->chase)
 	{
 		// Blinky targets packman current tile coordinates while in chase mode
-		(ghosts[0])->targetX = (int)pacman->x;
-		(ghosts[0])->targetY = (int)pacman->y;
+		(ghosts[0])->targetTileX = pacman->tileX;
+		(ghosts[0])->targetTileY = pacman->tileY;
 	}
-	for (int i = 0; i < ghosts_count; i++)
+	//for (int i = 0; i < ghosts_count; i++)
 	{
-		ghosts[i]->Move();
+		ghosts[0]->Move();
 		//ghosts[i]->WallStop();
 	}
 

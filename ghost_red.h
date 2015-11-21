@@ -6,14 +6,12 @@ class GhostRed : public Ghost
 private:
 
 public:
-
-	int targetX;
-	int targetY;
-
 	GhostRed(int x,int y);
 	~GhostRed();
 
-	void Draw() override;
-	void Move() override;
+	void Draw() override; // my unique look
+	void Move() override; // my unique movement
+
+	void onTileChange() override;
 
 };
