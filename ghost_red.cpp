@@ -4,8 +4,6 @@
 #include "glut.h"
 #include <iostream>
 
-extern int initial_map[15][30];
-
 GhostRed::GhostRed(int x, int y) : Ghost(x,y)
 {
 	index = 1;
@@ -28,29 +26,4 @@ void GhostRed::Draw()
 		glRotatef(45,0,0,1);
 		glutSolidCube(0.5);
 	glPopMatrix();
-}
-
-// Blinky "shadow" movement algorithm
-void GhostRed::Move() 
-{
-
-	// Regular Blinky Movement
-	Ghost::Move();
-
-	isAtIntersection();
-
-	AtTurn();
-
-	//std::cout << "Blinky angle: " << angle << std::endl;
-	
-	//	std::cout << "TRUE! " << angle << std::endl;
-	
-	//else
-			
-
-}
-
-void GhostRed::onTileChange()
-{
-	//std::cout << "Blinky current tile: " << tileX << ", " << tileY << std::endl;
 }

@@ -10,20 +10,18 @@ Creature::Creature(int x_b, int y_b)
 	y = y_b;
 	tileX = x_b;
 	tileY = y_b;
+
+	atCenter = true;
 }
 
 void Creature::calcTileX()
 {
 	if (angle == 0)
 		if (x - (int)x > 0.5)
-		{
 			tileX = (int)ceil(x);
-		}
 	if (angle == 180)
 		if (x - (int)x < 0.5)
-		{
 			tileX = (int)floor(x);
-		}
 }
 
 void Creature::calcTileY()
@@ -36,13 +34,44 @@ void Creature::calcTileY()
 			tileY = (int)floor(y);
 }
 
+bool Creature::isCenterTile()
+{
+	if (angle == 0)
+	{
+		if (x - (int)x > 0.1)
+			return true;
+	}
+	if (angle == 180)
+	{
+		if (x - (int)x < 0.1)
+			return true;
+	}
+	if (angle == 90)
+	{
+		if (y - (int)y > 0.1)
+			return true;
+	}
+	if (angle == 270)
+	{
+		if (y - (int)y < 0.1)
+			return true;
+	}
+	return false;
+}
 
 void Creature::Move()
 {
+
 	if (moving) 
 	{
 		x +=  speed*cos(M_PI/180*angle); // dodawany jakis staly interwal
 		y +=  speed*sin(M_PI/180*angle);
+
+		if (!atCenter && isCenterTile())
+		{
+			atCenter = true;
+			onTileCenter();
+		}
 	}
 
 	int oldTileX = tileX;
@@ -52,7 +81,10 @@ void Creature::Move()
 	calcTileY();
 
 	if (tileX != oldTileX || tileY != oldTileY)
+	{
+		atCenter = false;
 		onTileChange();
+	}
 }
 
 void Creature::Pad()

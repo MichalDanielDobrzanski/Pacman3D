@@ -6,38 +6,29 @@ class Ghost : public Creature {
 private:
 
 public:
+	// general ghost info:
 	int index;
-
 	bool frightened;
 	bool chase;
 	bool scatter;
-
-	int targetTileX;
-	int targetTileY;
-
-	int scatterX;
-	int scatterY;
-
 	Ghost(int x, int y);
 
-	virtual void Move(); // this ghost movement will be replaced by the specific one.
+	// scattering functionality:
+	int scatterTileX;
+	int scatterTileY;
+
+	// targeting functionality:
+	int targetTileX;
+	int targetTileY;
+	double TargetPythagoras(int x, int y); 
+
+	//  visual appearance:
 	virtual void Draw(); // unique ghost look
 
-	bool WallCheck(int a);
-	bool WallStop();
-
-	bool AtTurn();
+	// map location and inference mechanisms:	
+	void onTileChange() override;
+	void onTileCenter() override;
+	bool WallCheck(int angle);
 	
-	int inter;
-	bool isAtIntersection();
-	void IntersectionDecision();
 
-	double Rotate(double chng);
-	std::pair<int,int> NextTile(int angle);
-
-	double GetLeftAngle(double angdir);
-	double GetRightAngle(double angdir);
-	double TargetPythagoras(int x, int y);
-
-	
 };

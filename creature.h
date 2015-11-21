@@ -5,11 +5,15 @@
 class Creature
 {
 private:
+	
 	void calcTileX();
 	void calcTileY();
 
-public:
+	bool atCenter; // synchronizing boolean. Invoke onTileCenter only once!
+	bool isCenterTile();
 
+public:
+	
 	virtual ~Creature() {};
 	Creature(int x, int y);
 
@@ -24,7 +28,9 @@ public:
 
 	void Move();
 	void Pad();
+
 	virtual void onTileChange() {}; // current tile
+	virtual void onTileCenter() {};
 
 };
 

@@ -157,5 +157,10 @@ void Pac::Turn(int nangle) // new angle
 
 void Pac::onTileChange()
 {
+	//std::cout << "Packman tile: " << tileX << ", " << tileY << std::endl;
+}
+
+void Pac::onTileCenter()
+{
 	std::cout << "Packman tile: " << tileX << ", " << tileY << std::endl;
 }

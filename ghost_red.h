@@ -10,8 +10,6 @@ public:
 	~GhostRed();
 
 	void Draw() override; // my unique look
-	void Move() override; // my unique movement
-
-	void onTileChange() override;
+	//void Move() override; // my unique movement
 
 };

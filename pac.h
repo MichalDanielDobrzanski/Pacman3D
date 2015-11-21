@@ -22,5 +22,6 @@ public:
 
 	// info:
 	void onTileChange() override;
+	void onTileCenter() override;
 
 };
