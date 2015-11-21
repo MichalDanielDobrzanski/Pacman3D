@@ -4,6 +4,8 @@
 #include <iostream>
 
 
+static const double CENTER_DIM = 0.05;
+
 Creature::Creature(int x_b, int y_b)
 {
 	x = x_b;
@@ -38,22 +40,22 @@ bool Creature::isCenterTile()
 {
 	if (angle == 0)
 	{
-		if (x - (int)x > 0.1)
+		if (x - (int)x > 1 - CENTER_DIM)
 			return true;
 	}
 	if (angle == 180)
 	{
-		if (x - (int)x < 0.1)
+		if (x - (int)x < CENTER_DIM)
 			return true;
 	}
 	if (angle == 90)
 	{
-		if (y - (int)y > 0.1)
+		if (y - (int)y > 1 - CENTER_DIM)
 			return true;
 	}
 	if (angle == 270)
 	{
-		if (y - (int)y < 0.1)
+		if (y - (int)y < CENTER_DIM)
 			return true;
 	}
 	return false;
@@ -91,4 +93,20 @@ void Creature::Pad()
 {
 	x = (int)x;
 	y = (int)y;
+}
+
+void Creature::PadToCenter()
+{
+
+	if (angle == 180 || angle == 270)
+	{
+		x = tileX;
+		y = tileY;
+	}
+
+	if (angle == 0 || angle == 90)
+	{
+		x = tileX;
+		y = tileY;
+	}
 }

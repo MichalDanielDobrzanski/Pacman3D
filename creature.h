@@ -1,11 +1,10 @@
 #ifndef CREATURE_H
 #define CREATURE_H
 
-
 class Creature
 {
 private:
-	
+
 	void calcTileX();
 	void calcTileY();
 
@@ -28,11 +27,11 @@ public:
 
 	void Move();
 	void Pad();
+	void PadToCenter();
 
 	virtual void onTileChange() {}; // current tile
 	virtual void onTileCenter() {};
 
 };
-
 
 #endif

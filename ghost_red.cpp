@@ -1,6 +1,7 @@
 #define _USE_MATH_DEFINES
 #include <cmath>
 #include "ghost_red.h"
+#include "gameboard.h"
 #include "glut.h"
 #include <iostream>
 
@@ -10,12 +11,13 @@ GhostRed::GhostRed(int x, int y) : Ghost(x,y)
 	chase = true;
 	scatter = false;
 	frightened = false;
+
+	// default scatter point for the red ghost
+	scatterTileX = GameBoard::DIM_X - 2;
+	scatterTileY = GameBoard::DIM_Y + 4;
 }
 
-GhostRed::~GhostRed()
-{
-
-}
+GhostRed::~GhostRed() { }
 
 void GhostRed::Draw()
 {

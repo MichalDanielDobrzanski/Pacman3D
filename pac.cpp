@@ -162,5 +162,5 @@ void Pac::onTileChange()
 
 void Pac::onTileCenter()
 {
-	std::cout << "Packman tile: " << tileX << ", " << tileY << std::endl;
+	//std::cout << "Packman tile: " << tileX << ", " << tileY << std::endl;
 }

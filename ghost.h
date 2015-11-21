@@ -20,7 +20,7 @@ public:
 	// targeting functionality:
 	int targetTileX;
 	int targetTileY;
-	double TargetPythagoras(int x, int y); 
+	int TargetPythagoras(int agle); 
 
 	//  visual appearance:
 	virtual void Draw(); // unique ghost look

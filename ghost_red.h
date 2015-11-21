@@ -3,8 +3,6 @@
 class GhostRed : public Ghost
 {
 
-private:
-
 public:
 	GhostRed(int x,int y);
 	~GhostRed();
