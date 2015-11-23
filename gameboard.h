@@ -11,8 +11,6 @@ public:
 	static const int CENTER_Y = (DIM_Y + 1) / 2;
 	static const int CENTER_Z = 0;
 
-	double wallThickness;
-
 	int coinsCount;
 
 	// static map references:
@@ -23,6 +21,7 @@ public:
 
 	// map visual appearance:
 	void Draw();
+	void DrawWalls(int j, int i);
 };
 
 #endif

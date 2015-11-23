@@ -5,9 +5,7 @@ class Creature
 {
 private:
 
-	void calcTileX();
-	void calcTileY();
-
+	void calcCurrentTile(); // calculate current tile
 	bool atCenter; // synchronizing boolean. Invoke onTileCenter only once!
 	bool isCenterTile();
 
@@ -29,8 +27,8 @@ public:
 	void Pad();
 	void PadToCenter();
 
-	virtual void onTileChange() {}; // current tile
-	virtual void onTileCenter() {};
+	virtual void onTileChange() {}; // on step for a new tile
+	virtual void onTileCenter() {}; // when in tile center
 
 };
 

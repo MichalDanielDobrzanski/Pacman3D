@@ -100,7 +100,6 @@ int Ghost::TargetPythagoras(int agle)
 void Ghost::onTileCenter()
 {
 	moving = false;
-
 	PadToCenter();
 
 	//std::cout << "Ghost at center of tile coords: " << x << ", " << y << std::endl;
@@ -126,7 +125,7 @@ void Ghost::onTileCenter()
 		//std::cout << "Ghost right dist: " << dist[2] << std::endl;
 	}
 
-	std::cout << "Ghost Fdist: " << dist[0] << ", Ldist: " << dist[1] << ", Rdist" << dist[2] << std::endl;
+	//std::cout << "Ghost Fdist: " << dist[0] << ", Ldist: " << dist[1] << ", Rdist" << dist[2] << std::endl;
 
 	int smallest = dist[0];
 	int idx = 0;
@@ -139,12 +138,8 @@ void Ghost::onTileCenter()
 		}
 	}
 
-	try {
-		if (smallest == 10000)
-			throw;
-	} catch (int e) {
-		std::cout << "THERE CANT BE ANY DEAD CORRIDORS IN THE MAP "  << '\n';
-	}
+	try { if (smallest == 10000) throw 99; } 
+	catch (int e) { std::cout << "Exception " << e << ": THERE CANT BE ANY DEAD CORRIDORS IN THE MAP "  << '\n'; }
 
 	if (idx == 1)
 		angle = GetLeftAngle(angle);

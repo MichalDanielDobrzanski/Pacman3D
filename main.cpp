@@ -64,34 +64,34 @@ GLdouble positionz = eyeZ;
 
 
 void init()
-{
+{   
+	// ustaw intensywnosc swaitla i kolor
+	// https://www.youtube.com/watch?v=g_0yV7jZvGg
+	// https://www.youtube.com/watch?v=gFZqzVQrw84 // swietny opis rodzajow swiatel
+	// https://www.youtube.com/watch?v=oVwH8KV1xnY // najlepsze
 
-    GLfloat mat_ambient[]    = { 1.0, 1.0,  1.0, 1.0 };
+	// intialization of 3D rendering
+	glEnable(GL_DEPTH_TEST);
+	glEnable(GL_COLOR_MATERIAL);
+	glEnable(GL_LIGHTING);
+    glEnable(GL_LIGHT0);
+	glEnable(GL_LIGHT1);
+	glEnable(GL_NORMALIZE); // Automatically normalize normals (vectors of surfaces )
+	glShadeModel(GL_SMOOTH); // smooth shading
+
+	// Add ambient light
+    GLfloat ambientColor[] = { 0.2, 0.2,  0.2, 1.0 };
+	glLightModelfv( GL_LIGHT_MODEL_AMBIENT, ambientColor); // ambient lights everywhere with the same amount 
+   
+	GLfloat mat_ambient[]    = { 1.0, 1.0,  1.0, 1.0 };
     GLfloat mat_specular[]   = { 1.0, 1.0,  1.0, 1.0 };
-	GLfloat light_position[] = { GameBoard::DIM_X / 2 , GameBoard::DIM_Y / 2, 4.0, 1.0 };
-    GLfloat lm_ambient[]     = { 0.2, 0.2,  0.2, 1.0 };
 
-    glMaterialfv( GL_FRONT, GL_AMBIENT, mat_ambient );
+	glMaterialfv( GL_FRONT, GL_AMBIENT, mat_ambient );
     glMaterialfv( GL_FRONT, GL_SPECULAR, mat_specular );
     glMaterialf( GL_FRONT, GL_SHININESS, 50.0 );
-
-    glLightfv( GL_LIGHT0, GL_POSITION, light_position );
-    glLightModelfv( GL_LIGHT_MODEL_AMBIENT, lm_ambient );
-
 	// parametry cieniowania (flat daje taki sam kolor)
-    glShadeModel( GL_SMOOTH );
-
-    glEnable( GL_LIGHTING );
-    glEnable( GL_LIGHT0 );
 
     glDepthFunc( GL_LESS );
-    glEnable( GL_DEPTH_TEST );
-
-	glEnable(GL_NORMALIZE);
-
-	//gluPerspective( 90, 1, 0.1, 10.0 );
-	//glOrtho(0, GameBoard::DIM_X, 0, GameBoard::DIM_Y, 0.1, 10 );
-
 }
 
 void DrawInfo() 
@@ -160,13 +160,29 @@ void display()
 	glClearColor( 0.0f, 0.0f, 0.0f, 1.0f );
 	glClear( GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT ); // czysc bufory
 
-	// camera movement:
+	// lighting stuff:
+
+	// Add positioned light
+	GLfloat lightColor0[] = { 0.5f, 0.5f, 0.5f, 1.0f};
+	GLfloat lightPos0[] = { pacman->x, pacman->y, 2.0f, 1.0f };
+	glLightfv(GL_LIGHT0, GL_DIFFUSE,  lightColor0);
+    glLightfv(GL_LIGHT0, GL_POSITION, lightPos0);
+
+	// Add directed light:
+	GLfloat lightColor1[] = { 0.5f, 0.2f, 0.2f, 1.0f };
+	GLfloat lightPos1[] = {GameBoard::CENTER_X, GameBoard::CENTER_Y, 5.0f, 0.0f };
+	glLightfv(GL_LIGHT1, GL_DIFFUSE,  lightColor1);
+    glLightfv(GL_LIGHT1, GL_POSITION, lightPos1);
+
+	// camera movement stuff:
+
 	// http://gamedev.stackexchange.com/questions/43588/how-to-rotate-camera-centered-around-the-cameras-position
 	// M_PI /2 - przesuniecie fazowe w celu dobrego wyswietlenia poczatkowego planszy
 	// implementacja operacji: ROLL (theta) (zla!) oraz PITCH (phi) ('w', 's' jest ok)
 	if (pacFollowed) 
 	{
-		gluLookAt(pacman->x, pacman->y, pacman->z + centerDistance, pacman->x, pacman->y, pacman->z, 0, 1, 0);
+		gluLookAt(pacman->x, pacman->y, pacman->z + centerDistance, 
+			pacman->x, pacman->y, pacman->z, cos(theta + M_PI/2), sin(theta + M_PI/2), 0);
 	}
 	else 
 	{
@@ -253,41 +269,39 @@ void keyboard(unsigned char key, int x, int y)
 	switch (key)
 	{
 	case 'a':
-		if (!pacFollowed)
+		//if (!pacFollowed)
 			theta -= step;
 		positionx -= step;
 		break;
        
-    // kursor w górê
+    // kursor w gore
 	case 'w':
-		if (!pacFollowed)
+		//if (!pacFollowed)
 			phi += step;
 		positiony += step;
 		break;
        
     // kursor w prawo
 	case 'd':        
-		if (!pacFollowed)
+		//if (!pacFollowed)
 			theta += step;
 		positionx += step;
 		break;
        
-    // kursor w dó³
+    // kursor w dól
 	case 's':
-		if (!pacFollowed)
+		//if (!pacFollowed)
 			phi -= step;
 		positiony -= step;
 		break;
 
 	case 'r':
-		if (pacFollowed)
-			centerDistance -= step;
+		centerDistance -= step;
 		positionz += step;
 		break;
 
 	case 'f':
-		if (pacFollowed)
-			centerDistance += step;
+		centerDistance += step;
 		positionz -= step;
 		break;
 
@@ -334,39 +348,9 @@ void special( int key, int x, int y )
     reshape( glutGet( GLUT_WINDOW_WIDTH ), glutGet( GLUT_WINDOW_HEIGHT ) );
 }
 
-void mouseMotion( int x, int y )
-{
-	float dX = oldX - x;
-	float dY = oldY - y;
-
-	angleXZ += sensitivity*dX;
-	angleYZ += sensitivity*dY;
-
-	if(angleXZ < 0) angleXZ += 360;
-	else if(angleXZ >= 360) angleXZ -= 360;
-
-	if(angleYZ < 0) angleYZ = 0;
-	else if(angleYZ >= 180) angleYZ = 180;
-		
-	centerX = cos(angleXZ * M_PI / 180);
-	centerY = cos(angleYZ * M_PI / 180);
-	centerX = sin(angleXZ * M_PI / 180);
-	
-	oldX = x;
-	oldY = y;
-}
-
-void firstMotion( int x, int y )
-{
-    oldX = x;
-	oldY = y;
-
-	glutPassiveMotionFunc(mouseMotion);
-}
-
 void timer(int v) 
 {
-
+	// maybe some visual effects?
 }
 
 
@@ -387,12 +371,10 @@ int main(int argc, char** argv)
 	glutReshapeFunc( reshape ); // trzeba zmienic parametry rzutowania
 	glutIdleFunc(display); // scena jest caly czas przeliczana w tle
 
-	glutTimerFunc(15, timer, 1);
+	glutTimerFunc(40, timer, 1);
 
 	glutSpecialFunc(special);
 	glutKeyboardFunc(keyboard);
-	//glutMouseFunc(mouse);
-	//glutPassiveMotionFunc(firstMotion);
 
 	// inicjalizacja obiektow openGL
 	pacman = new Pac(15,2);

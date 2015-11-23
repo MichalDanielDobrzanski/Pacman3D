@@ -6,6 +6,8 @@
 #include "GLUT.H"
 #include <iostream>
 
+static const double CORNERING = 0.4;
+
 Pac::Pac(int tx, int ty) : Creature(tx,ty)
 {
 	z = 0;
@@ -21,14 +23,14 @@ Pac::~Pac() { }
 void Pac::Draw() 
 {
 	//draw current pacman
+
+	glNormal3f(0.0f, 0.0f, 1.0f);
 	glColor3f(1,1,0); // yellow
 	glPushMatrix();
 		glTranslatef(x,y,0.0);
 		glutSolidSphere(0.5,20,20);
 	glPopMatrix();
-
 }
-
 
 // true if COIN was eaten
 bool ConsumeMap(int x, int y)
@@ -51,22 +53,24 @@ bool ConsumeMap(int x, int y)
 // true if COIN (not energizer) was eaten
 bool Pac::Consume()
 {
-	if (x - (int)x < 0.4 &&  angle == 180) // going left
+
+
+	if (x - (int)x < CORNERING &&  angle == 180) // going left
 	{
 		if (ConsumeMap((int)x,(int)y))
 			return true;
 	} else 
-	if (x - (int)x >= 0.6 && angle == 0) // goin right
+	if (x - (int)x >= 1 - CORNERING && angle == 0) // goin right
 	{
 		if(ConsumeMap((int)x + 1,(int)y))
 			return true;
 	} else 
-	if (y - (int)y < 0.4 && angle == 270) // goin bottom
+	if (y - (int)y < CORNERING && angle == 270) // goin bottom
 	{
 		if(ConsumeMap((int)x,(int)y))
 			return true;
 	} else 
-	if (y - (int)y >= 0.6 && angle == 90) // goin top
+	if (y - (int)y >= 1 - CORNERING && angle == 90) // goin top
 	{
 		if (ConsumeMap((int)x,(int)y + 1))
 			return true;
@@ -104,7 +108,6 @@ void Pac::PadAndMove(int a)
 	angle = a;
 }
 
-// TODO: write an algorithm
 void Pac::Turn(int nangle) // new angle
 {
 	//std::cout << "angle " << angle << " New angle " << nangle << std::endl;
@@ -112,7 +115,7 @@ void Pac::Turn(int nangle) // new angle
 	{
 		if (nangle == 180) // wanting to go left
 		{
-			if ((y - (int)y >= 0.6) && !GameBoard::isWall((int)x - 1,(int)y - 1))
+			if ((y - (int)y >= 1 - CORNERING) && !GameBoard::isWall((int)x - 1,(int)y - 1))
 			{ // going from top
 				y += (1 - (y - (int)y));
 			} 
@@ -123,7 +126,7 @@ void Pac::Turn(int nangle) // new angle
 		} else
 		if (nangle == 0) // wanting to go right
 		{
-			if ((y - (int)y >= 0.6) && !GameBoard::isWall((int)x + 1,(int)y - 1))
+			if ((y - (int)y >= 1 - CORNERING) && !GameBoard::isWall((int)x + 1,(int)y - 1))
 			{ // going from top
 				y += (1 - (y - (int)y));
 			} 
@@ -134,7 +137,7 @@ void Pac::Turn(int nangle) // new angle
 		} else
 		if (nangle == 90) // wanting to go top
 		{
-			if ((x - (int)x >= 0.6) && !GameBoard::isWall((int)x + 1,(int)y + 1))
+			if ((x - (int)x >= 1 - CORNERING) && !GameBoard::isWall((int)x + 1,(int)y + 1))
 			{ // going from left
 				x += (1 - (x - (int)x));
 			} 
@@ -145,7 +148,7 @@ void Pac::Turn(int nangle) // new angle
 		} else
 		if (nangle == 270) // wanting to go bottom
 		{ // going from left
-			if ((x - (int)x >= 0.6) && !GameBoard::isWall((int)x + 1,(int)y - 1))
+			if ((x - (int)x >= 1 - CORNERING) && !GameBoard::isWall((int)x + 1,(int)y - 1))
 			{
 				x += (1 - (x - (int)x));
 			}

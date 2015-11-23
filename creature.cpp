@@ -16,54 +16,29 @@ Creature::Creature(int x_b, int y_b)
 	atCenter = true;
 }
 
-void Creature::calcTileX()
+void Creature::calcCurrentTile()
 {
-	if (angle == 0)
-		if (x - (int)x > 0.5)
-			tileX = (int)ceil(x);
-	if (angle == 180)
-		if (x - (int)x < 0.5)
-			tileX = (int)floor(x);
-}
-
-void Creature::calcTileY()
-{
-	if (angle == 90)
-		if (y - (int)y > 0.5)
-			tileY = (int)ceil(y);
-	if (angle == 270)
-		if (y - (int)y < 0.5)
-			tileY = (int)floor(y);
+	if ((angle == 0) && (x - (int)x > 0.5))
+		tileX = (int)ceil(x);
+	if ((angle == 180) && (x - (int)x < 0.5))
+		tileX = (int)floor(x);
+	if ((angle == 90) && (y - (int)y > 0.5))
+		tileY = (int)ceil(y);
+	if ((angle == 270) && (y - (int)y < 0.5))
+		tileY = (int)floor(y);
 }
 
 bool Creature::isCenterTile()
 {
-	if (angle == 0)
-	{
-		if (x - (int)x > 1 - CENTER_DIM)
-			return true;
-	}
-	if (angle == 180)
-	{
-		if (x - (int)x < CENTER_DIM)
-			return true;
-	}
-	if (angle == 90)
-	{
-		if (y - (int)y > 1 - CENTER_DIM)
-			return true;
-	}
-	if (angle == 270)
-	{
-		if (y - (int)y < CENTER_DIM)
-			return true;
-	}
-	return false;
+	return (
+		((angle == 0)   && (x - (int)x > 1 - CENTER_DIM)) ||
+	    ((angle == 180) && (x - (int)x < CENTER_DIM))     ||
+	    ((angle == 90)  && (y - (int)y > 1 - CENTER_DIM)) ||
+	    ((angle == 270) && (y - (int)y < CENTER_DIM)))    ? true : false;
 }
 
 void Creature::Move()
 {
-
 	if (moving) 
 	{
 		x +=  speed*cos(M_PI/180*angle); // dodawany jakis staly interwal
@@ -79,13 +54,12 @@ void Creature::Move()
 	int oldTileX = tileX;
 	int oldTileY = tileY;
 
-	calcTileX();
-	calcTileY();
+	calcCurrentTile();
 
-	if (tileX != oldTileX || tileY != oldTileY)
+	if (tileX != oldTileX || tileY != oldTileY) // kiedy wszedlem na nowa plytke
 	{
-		atCenter = false;
-		onTileChange();
+		atCenter = false;  // wtedy moge szukac centrum nowej plytki
+		onTileChange(); 
 	}
 }
 
@@ -97,16 +71,6 @@ void Creature::Pad()
 
 void Creature::PadToCenter()
 {
-
-	if (angle == 180 || angle == 270)
-	{
-		x = tileX;
-		y = tileY;
-	}
-
-	if (angle == 0 || angle == 90)
-	{
-		x = tileX;
-		y = tileY;
-	}
+	x = tileX;
+	y = tileY;
 }
