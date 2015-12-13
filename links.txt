@@ -33,3 +33,6 @@ https://open.gl/drawing
 
 Normals opengl:
 http://www.lighthouse3d.com/opengl/terrain/index.php?normals
+
+Animation:
+https://www.youtube.com/watch?v=-NcnJ1Q-x50

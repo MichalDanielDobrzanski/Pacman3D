@@ -8,6 +8,7 @@
 #include "pac.h"
 #include "ghost_red.h"
 #include "gameboard.h"
+#include "scrnsave.h"
 #include <iostream>
 #include <string>
 
@@ -45,6 +46,10 @@ GLdouble eyeX = 0;
 GLdouble eyeY = 0;
 GLdouble eyeZ = 0;
 
+// zooming
+float maxZ = 15;
+float minZ = 7;
+
 // information
 std::string infoText[] = 
 {
@@ -62,6 +67,9 @@ GLdouble positionx = eyeX;
 GLdouble positiony = eyeY;
 GLdouble positionz = eyeZ;
 
+// Ladowanie obrazow BMP - tekstury
+
+GLuint loadBMP(const char* imagepath);
 
 void init()
 {   
@@ -175,7 +183,6 @@ void display()
     glLightfv(GL_LIGHT1, GL_POSITION, lightPos1);
 
 	// camera movement stuff:
-
 	// http://gamedev.stackexchange.com/questions/43588/how-to-rotate-camera-centered-around-the-cameras-position
 	// M_PI /2 - przesuniecie fazowe w celu dobrego wyswietlenia poczatkowego planszy
 	// implementacja operacji: ROLL (theta) (zla!) oraz PITCH (phi) ('w', 's' jest ok)
@@ -186,10 +193,10 @@ void display()
 	}
 	else 
 	{
-		eyeX = centerX;// * sin(theta);
-		eyeY = centerY + centerDistance * sin(phi);// * sin(theta);
+		eyeX = centerX + 5 * sin(theta);
+		eyeY = centerY + centerDistance * sin(phi) + 5 * sin(theta);
 		eyeZ = centerZ + centerDistance * cos(phi);//  * cos(theta);
-		gluLookAt( eyeX, eyeY, eyeZ, centerX, centerY, centerZ, cos(theta + M_PI/2), sin(theta + M_PI/2), 0 );
+		gluLookAt( eyeX, eyeY, eyeZ, centerX, centerY, centerZ, sin(theta), cos(theta), 0 );
 	}
 
 	// move the pacman
@@ -203,7 +210,6 @@ void display()
 		board->coinsCount--;
 
 	// ghosts movement
-	
 	if (((GhostRed*)ghosts[0])->chase)
 	{
 		// Blinky targets packman current tile coordinates while in chase mode
@@ -264,50 +270,60 @@ void reshape(GLsizei w, GLsizei h)
 
 void keyboard(unsigned char key, int x, int y)
 {
-	float step = 0.1;
+	static float step = 0.1;
+	static float stepZoom = 1;
 
 	switch (key)
 	{
 	case 'a':
-		//if (!pacFollowed)
-			theta -= step;
+		if (theta < -1)
+			return;
+		theta -= step;
 		positionx -= step;
 		break;
        
     // kursor w gore
 	case 'w':
-		//if (!pacFollowed)
-			phi += step;
+		if (phi > 1)
+			return;
+		phi += step;
 		positiony += step;
 		break;
        
     // kursor w prawo
 	case 'd':        
-		//if (!pacFollowed)
-			theta += step;
+		if (theta > 1)
+			return;
+		theta += step;
 		positionx += step;
 		break;
        
     // kursor w dól
 	case 's':
-		//if (!pacFollowed)
-			phi -= step;
+		if (phi < -1)
+			return;
+		phi -= step;
 		positiony -= step;
 		break;
 
 	case 'r':
-		centerDistance -= step;
-		positionz += step;
+		if (centerDistance < minZ)
+			return;
+		centerDistance -= stepZoom;
+		//positionz += stepZoom;
 		break;
 
 	case 'f':
-		centerDistance += step;
-		positionz -= step;
+		if (centerDistance > maxZ)
+			return;
+		centerDistance += stepZoom;
+		//positionz -= stepZoom;
 		break;
 
 	case 'c':
 		//follow camera mode
 		pacFollowed = pacFollowed ? false : true;
+		pacFollowed ? centerDistance = maxZ - 4 : centerDistance = maxZ;
 		break;
 	}
 }
@@ -315,7 +331,7 @@ void keyboard(unsigned char key, int x, int y)
 void mouse(int button, int state, int x, int y)
 {
 	if (button == GLUT_RIGHT_BUTTON) {
-		exit(0); 
+		exit(0);
 	}
 }
 
@@ -353,13 +369,12 @@ void timer(int v)
 	// maybe some visual effects?
 }
 
-
 int main(int argc, char** argv)
 {
 	glutInit( &argc, argv );
 	glutInitDisplayMode(GLUT_DOUBLE | GLUT_RGBA | GLUT_DEPTH); // pojedyncze buforowanie oraz bufor glebokosci ustawiamy
 	glutInitWindowPosition( 0, 0 );
-	glutInitWindowSize( 500, 500 );
+	glutInitWindowSize( 1000, 1000 );
 	glutCreateWindow( "PackMan" ); // zainicjowany kontekst openGL'owy
 
 	//glutGameModeString( "800x600:16@60" );
@@ -393,4 +408,3 @@ int main(int argc, char** argv)
 
 	return 0;
 }
-

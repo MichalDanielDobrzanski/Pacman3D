@@ -1,5 +1,7 @@
 #ifndef GAMEBOARD_H
 #define GAMEBOARD_H
+#include <windows.h>
+#include "resource.h"
 
 class GameBoard {
 
@@ -17,11 +19,17 @@ public:
 	static int initial_map[DIM_Y][DIM_X];
 	static bool isWall(int x, int y);
 
+	// tekstury
+	BITMAP BM;
+
 	GameBoard();
 
 	// map visual appearance:
 	void Draw();
+	void DrawWall(int x, int y, int z);
 	void DrawWalls(int j, int i);
+
+	void TextureLoad(int id);
 };
 
 #endif

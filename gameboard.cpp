@@ -5,6 +5,9 @@
 
 using namespace std;
 
+// Zmienne do kontroli animacji monet:
+int coinAngle = 0;
+
 // 0 - coin
 // 1 - wall
 // 2 - gate
@@ -34,6 +37,7 @@ int GameBoard::initial_map[GameBoard::DIM_Y][GameBoard::DIM_X] =
 
 
 // vertices arrays:
+// Szescian:
 GLfloat vertices[] = {  1, 1, 1,  -1, 1, 1,  -1,-1, 1,   1,-1, 1,   // v0,v1,v2,v3 (front)
                         1, 1, 1,   1,-1, 1,   1,-1,-1,   1, 1,-1,   // v0,v3,v4,v5 (right)
                         1, 1, 1,   1, 1,-1,  -1, 1,-1,  -1, 1, 1,   // v0,v5,v6,v1 (top)
@@ -107,12 +111,62 @@ GLubyte indices3[] = { 0, 2, 1,				  // front
                       11,14,13,   11,13,12,   // left
                       15,17,16             }; // back
 
-// draw wall with vertex arrays - http://www.songho.ca/opengl/gl_vertexarray.html
-void DrawWall(int x, int y, int z)
+
+// textures:
+GLfloat textures[] = {  0.0,0.0, 1.0,0.0, 1.0,1.0, 0.0, 1.0,
+						0.0,0.0, 1.0,0.0, 1.0,1.0, 0.0, 1.0,
+						0.0,0.0, 1.0,0.0, 1.0,1.0, 0.0, 1.0,
+						0.0,0.0, 1.0,0.0, 1.0,1.0, 0.0, 1.0,
+						0.0,0.0, 1.0,0.0, 1.0,1.0, 0.0, 1.0,
+						0.0,0.0, 1.0,0.0, 1.0,1.0, 0.0, 1.0
+					 };
+
+// Wspolne wspolrzedne tekstury dla zbudowanej figury dla konca muru.
+GLfloat textures2[] = { 0.0,0.0, 0.5,0.0, 1.0,0.25, 1.0,0.75, 0.5,1.0, 0.0,1.0,
+						0.0,0.0, 1.0,0.0, 1.0,1.0, 0.0, 1.0,
+						0.0,0.0, 1.0,0.0, 1.0,1.0, 0.0, 1.0,
+						0.0,0.0, 1.0,0.0, 1.0,1.0, 0.0, 1.0,
+						0.0,0.0, 1.0,0.0, 1.0,1.0, 0.0, 1.0,
+						0.0,0.0, 1.0,0.0, 1.0,1.0, 0.0, 1.0
+					 };
+
+
+void GameBoard::TextureLoad(int id)
 {
+	HBITMAP Bitmap = NULL;
+	HINSTANCE myInstance = GetModuleHandle(NULL);
+
+	Bitmap = (HBITMAP)LoadImage(myInstance,MAKEINTRESOURCE(id),IMAGE_BITMAP,0,0, LR_CREATEDIBSECTION);
+	GetObject(Bitmap,sizeof(BM),&BM);
+	
+	glTexParameterf(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_REPEAT);
+	glTexParameterf(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_REPEAT);
+
+	glTexParameterf(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_NEAREST); // wiecej pikseli, jak jestesmy blizej obiektu
+	glTexParameterf(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_NEAREST); // mniej pikseli im dalej
+
+	// glTexEnvf(GL_TEXTURE_ENV, GL_TEXTURE_ENV_MODE, GL_MODULATE);
+
+	glTexImage2D(GL_TEXTURE_2D,0,GL_RGB,BM.bmWidth,BM.bmHeight,0,GL_BGR_EXT,GL_UNSIGNED_BYTE,BM.bmBits);
+
+	DeleteObject((HGDIOBJ) Bitmap);
+}
+
+// draw wall with vertex arrays - http://www.songho.ca/opengl/gl_vertexarray.html
+void GameBoard::DrawWall(int x, int y, int z)
+{
+	glEnable(GL_TEXTURE_2D);
+
+	// ustawienia funkcji teksturu
+	// co one powoduja? ? GL_REPLACE ? GL _MODULATE
+	glTexEnvf(GL_TEXTURE_ENV, GL_TEXTURE_ENV_MODE, GL_REPLACE);
+
 	glEnableClientState(GL_COLOR_ARRAY);
 	glEnableClientState(GL_NORMAL_ARRAY);
     glEnableClientState(GL_VERTEX_ARRAY);
+	glEnableClientState(GL_TEXTURE_COORD_ARRAY);
+
+	glTexCoordPointer(2,GL_FLOAT,0,textures);
 	glNormalPointer(GL_FLOAT, 0, normals);
     glVertexPointer(3, GL_FLOAT, 0, vertices);
 	glColorPointer(3, GL_FLOAT, 0, colors);
@@ -122,11 +176,15 @@ void DrawWall(int x, int y, int z)
 		glDrawElements(GL_TRIANGLES, 36, GL_UNSIGNED_BYTE, indices);
 	glPopMatrix();
 
+	glDisableClientState(GL_TEXTURE_COORD_ARRAY);
 	glDisableClientState(GL_VERTEX_ARRAY);  // disable vertex arrays
     glDisableClientState(GL_NORMAL_ARRAY);
 	glDisableClientState(GL_COLOR_ARRAY);
+
+	glDisable(GL_TEXTURE_2D);
 }
 
+// Graniastos³up o podstawie trójk¹ta.
 void Triang()
 {
 	glVertexPointer(3,GL_FLOAT,0,vertices2);
@@ -137,6 +195,7 @@ void Triang()
 	glPopMatrix();
 }
 
+// Drugi graniastos³up o podstawie trójk¹ta.
 void Triang2()
 {
 	glVertexPointer(3,GL_FLOAT,0,vertices3);
@@ -147,6 +206,7 @@ void Triang2()
 	glPopMatrix();
 }
 
+// Szescian o szerokosci 2.
 void Block()
 {
 	glVertexPointer(3,GL_FLOAT,0,vertices);
@@ -157,8 +217,15 @@ void Block()
 	glPopMatrix();
 }
 
+// Koniec muru.
 void DrawWallEnd(int x, int y, int z, int angle)
 {
+	// Okreslenie wspolnej tesktury.
+	glEnable(GL_TEXTURE_2D);
+	glTexEnvf(GL_TEXTURE_ENV, GL_TEXTURE_ENV_MODE, GL_REPLACE);
+	glEnableClientState(GL_TEXTURE_COORD_ARRAY);
+	glTexCoordPointer(2,GL_FLOAT,0,textures);
+
 	glEnableClientState(GL_NORMAL_ARRAY);
 	glEnableClientState(GL_COLOR_ARRAY);
 	glEnableClientState(GL_VERTEX_ARRAY);
@@ -197,6 +264,9 @@ void DrawWallEnd(int x, int y, int z, int angle)
 	glDisableClientState(GL_VERTEX_ARRAY);
 	glDisableClientState(GL_NORMAL_ARRAY);
 	glDisableClientState(GL_COLOR_ARRAY);
+	glDisableClientState(GL_TEXTURE_COORD_ARRAY);
+
+	glDisable(GL_TEXTURE_2D);
 }
 
 GameBoard::GameBoard()
@@ -211,10 +281,15 @@ GameBoard::GameBoard()
 				coinsCount++;
 		}
 	}
+	// zaladuj teksture.
+	TextureLoad(ID_2);
 }
 
 void GameBoard::Draw()
 {
+	static int coinStep = 1;
+	coinStep = (coinStep + 1) % 360;
+	
 	for (int i = 0; i < DIM_X; i++)
 	{
 		for (int j = 0; j < DIM_Y; j++)
@@ -225,9 +300,11 @@ void GameBoard::Draw()
 			if (initial_map[j][i] == 0) 
 			{
 				// draw coins
-				glColor3f(1,0,1/(float)(j + i));
 				glPushMatrix();
+					glColor3f(1,0,1/(float)(j + i));
 					glTranslatef(i, DIM_Y - j - 1,CENTER_Z);
+					glRotatef(coinStep + (i * j),0,1,0);
+					glScalef(1.0,1.0,2.0);
 					glutSolidSphere(0.1,6,6);
 				glPopMatrix();
 			} else 
@@ -289,6 +366,7 @@ void GameBoard::DrawWalls(int j, int i)
 	}
 }
 
+// Perform checking whether there is a wall on specific tile (described as x,y)
 bool GameBoard::isWall(int x, int y)
 {
 	int idx = DIM_Y - y - 1;

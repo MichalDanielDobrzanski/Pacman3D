@@ -90,6 +90,14 @@
     <ClInclude Include="ghost_red.h" />
     <ClInclude Include="creature.h" />
     <ClInclude Include="pac.h" />
+    <ClInclude Include="resource.h" />
+  </ItemGroup>
+  <ItemGroup>
+    <ResourceCompile Include="Pacman.rc" />
+  </ItemGroup>
+  <ItemGroup>
+    <Image Include="images\image1.bmp" />
+    <Image Include="images\image2.bmp" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">
