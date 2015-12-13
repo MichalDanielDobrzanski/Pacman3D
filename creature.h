@@ -12,9 +12,9 @@ private:
 public:
 	
 	virtual ~Creature() {};
-	Creature(int x, int y);
+	Creature(int x, int y, float z);
 
-	double x, y;  // wspolrzedne do poruszania sie po planszy
+	float x, y, z;  // wspolrzedne do poruszania sie po planszy
 	int tileX;
 	int tileY;
 
@@ -25,7 +25,7 @@ public:
 
 	void Move();
 	void Pad();
-	void PadToCenter();
+	void PadToCenter(); // makes creature put in the center of the current tile.
 
 	virtual void onTileChange() {}; // on step for a new tile
 	virtual void onTileCenter() {}; // when in tile center

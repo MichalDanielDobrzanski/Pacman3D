@@ -11,7 +11,7 @@ public:
 	bool frightened;
 	bool chase;
 	bool scatter;
-	Ghost(int x, int y);
+	Ghost(int x, int y, float z);
 
 	// scattering functionality:
 	int scatterTileX;
@@ -23,7 +23,7 @@ public:
 	int TargetPythagoras(int agle); 
 
 	//  visual appearance:
-	virtual void Draw(); // unique ghost look
+	void Draw(float phi, float r, float g, float b); // unique ghost look
 
 	// map location and inference mechanisms:	
 	void onTileChange() override;

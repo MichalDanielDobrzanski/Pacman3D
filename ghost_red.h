@@ -4,10 +4,9 @@ class GhostRed : public Ghost
 {
 
 public:
-	GhostRed(int x,int y);
+	GhostRed(int x,int y, float z);
 	~GhostRed();
 
-	void Draw() override; // my unique look
 	//void Move() override; // my unique movement
 
 };

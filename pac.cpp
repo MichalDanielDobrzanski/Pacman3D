@@ -8,7 +8,7 @@
 
 static const double CORNERING = 0.4;
 
-Pac::Pac(int tx, int ty) : Creature(tx,ty)
+Pac::Pac(int tx, int ty) : Creature(tx,ty,0)
 {
 	z = 0;
 	speed = 0.07;

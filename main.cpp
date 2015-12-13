@@ -24,52 +24,37 @@ bool pacFollowed = false;
 // ghosts
 Ghost *ghosts[ghosts_count];
 
-// mouse
-GLdouble dx = 0;
-GLdouble dy = 0;
-GLdouble dz = 0;
-
-int oldX = 0;
-int oldY = 0;
-
-double theta = 0;
-double phi = 0;
-
-float sensitivity = -0.5f;
-
-// camera
-float angleXZ = -90;
-float angleYZ = 90;
-
-// init coordinates
-GLdouble eyeX = 0;
-GLdouble eyeY = 0;
-GLdouble eyeZ = 0;
-
-// zooming
-float maxZ = 15;
-float minZ = 7;
-
-// information
+// basic game information
 std::string infoText[] = 
 {
 	"Coins left: ",
 	"Lives: "
 };
 
-// wspolrzedne dla kamery (obserwatora calej sceny)
+// zooming - max Z distance and min Z distance
+float maxZ = 15;
+float minZ = 8;
+
+// Camera up/down maximums:
+float camUpDownMax = 0.8;
+
+// Camera left/right maximums:
+float camLRMax = 0.8;
+
+// Camera rotation angles:
+double theta = 0;
+double phi = 0;
+
+// Initial camera looking target
 GLdouble centerX = GameBoard::CENTER_X;
 GLdouble centerY = GameBoard::CENTER_Y;
 GLdouble centerZ = GameBoard::CENTER_Z;
 GLdouble centerDistance = 15;
 
-GLdouble positionx = eyeX;
-GLdouble positiony = eyeY;
-GLdouble positionz = eyeZ;
-
-// Ladowanie obrazow BMP - tekstury
-
-GLuint loadBMP(const char* imagepath);
+// Camera (i.e. observer) coordinates
+GLdouble eyeX = 0;
+GLdouble eyeY = 0;
+GLdouble eyeZ = 0;
 
 void init()
 {   
@@ -109,7 +94,6 @@ void DrawInfo()
 	static char count_buffer[buf_length];
 	std::sprintf(count_buffer,"%d",pacman->lives);
 	std::sprintf(count_buffer + 1,"%d",board->coinsCount); // very unsafe! Be careful!
-	
 
 	// updating coins count
 	// http://stackoverflow.com/questions/18847109/displaying-fixed-location-2d-text-in-a-3d-opengl-world-using-glut
@@ -187,17 +171,23 @@ void display()
 	// M_PI /2 - przesuniecie fazowe w celu dobrego wyswietlenia poczatkowego planszy
 	// implementacja operacji: ROLL (theta) (zla!) oraz PITCH (phi) ('w', 's' jest ok)
 	if (pacFollowed) 
-	{
-		gluLookAt(pacman->x, pacman->y, pacman->z + centerDistance, 
-			pacman->x, pacman->y, pacman->z, cos(theta + M_PI/2), sin(theta + M_PI/2), 0);
+	{ // look at pacman 
+		centerX = pacman->x;
+		centerY = pacman->y;
+		centerZ = pacman->z;
 	}
 	else 
-	{
-		eyeX = centerX + 5 * sin(theta);
-		eyeY = centerY + centerDistance * sin(phi) + 5 * sin(theta);
-		eyeZ = centerZ + centerDistance * cos(phi);//  * cos(theta);
-		gluLookAt( eyeX, eyeY, eyeZ, centerX, centerY, centerZ, sin(theta), cos(theta), 0 );
+	{ // look at the middle of the gameboard
+		centerX = GameBoard::CENTER_X;
+		centerY = GameBoard::CENTER_Y;
+		centerZ = GameBoard::CENTER_Z;
 	}
+
+	eyeX = centerX + 5 * sin(theta);
+	eyeY = centerY + centerDistance * sin(phi) + 5 * sin(theta);
+	eyeZ = centerZ + centerDistance * cos(phi);
+	gluLookAt( eyeX, eyeY, eyeZ, centerX, centerY, centerZ, sin(theta), cos(theta), 0 );
+
 
 	// move the pacman
 	pacman->Move();	
@@ -209,7 +199,7 @@ void display()
 	if (pacman->Consume())
 		board->coinsCount--;
 
-	// ghosts movement
+	// ghosts movement algorithms:
 	if (((GhostRed*)ghosts[0])->chase)
 	{
 		// Blinky targets packman current tile coordinates while in chase mode
@@ -226,10 +216,10 @@ void display()
 	glPushMatrix();
 		pacman->Draw();
 		board->Draw();
-		for (int i = 0; i < ghosts_count; i++)
-		{
-			ghosts[i]->Draw();
-		}
+		ghosts[0]->Draw(phi,1,0,0); // Blinky
+		ghosts[1]->Draw(phi,1,0.753f,0.796f); // Pinky
+		ghosts[2]->Draw(phi,0,1,1); // Inky
+		ghosts[3]->Draw(phi,1,0.647f,0); // Clyde
 	glPopMatrix();
 
 	// screen information
@@ -247,7 +237,6 @@ void reshape(GLsizei w, GLsizei h)
     glViewport( 0, 0, w, h );
     glMatrixMode( GL_PROJECTION );
     glLoadIdentity();
-
 	        
 	GLdouble aspect = 1;
 	if( h > 0 )
@@ -273,40 +262,39 @@ void keyboard(unsigned char key, int x, int y)
 	static float step = 0.1;
 	static float stepZoom = 1;
 
+	// Camera / zooming
 	switch (key)
 	{
 	case 'a':
-		if (theta < -1)
+		// left
+		if (theta < -camLRMax)
 			return;
 		theta -= step;
-		positionx -= step;
 		break;
        
-    // kursor w gore
 	case 'w':
-		if (phi > 1)
+		// up
+		if (phi > camUpDownMax)
 			return;
 		phi += step;
-		positiony += step;
 		break;
        
-    // kursor w prawo
-	case 'd':        
-		if (theta > 1)
+	case 'd':     
+		// right
+		if (theta > camLRMax)
 			return;
 		theta += step;
-		positionx += step;
 		break;
        
-    // kursor w dól
 	case 's':
-		if (phi < -1)
+		// down
+		if (phi < -camUpDownMax)
 			return;
 		phi -= step;
-		positiony -= step;
 		break;
 
 	case 'r':
+		// zoom in
 		if (centerDistance < minZ)
 			return;
 		centerDistance -= stepZoom;
@@ -314,6 +302,7 @@ void keyboard(unsigned char key, int x, int y)
 		break;
 
 	case 'f':
+		// zoom out
 		if (centerDistance > maxZ)
 			return;
 		centerDistance += stepZoom;
@@ -324,10 +313,17 @@ void keyboard(unsigned char key, int x, int y)
 		//follow camera mode
 		pacFollowed = pacFollowed ? false : true;
 		pacFollowed ? centerDistance = maxZ - 4 : centerDistance = maxZ;
+		if(!pacFollowed)
+		{
+			// reset angles when returning from following mode
+			phi = 0;
+			theta = 0;
+		}
 		break;
 	}
 }
 
+// Mouse handling
 void mouse(int button, int state, int x, int y)
 {
 	if (button == GLUT_RIGHT_BUTTON) {
@@ -335,6 +331,7 @@ void mouse(int button, int state, int x, int y)
 	}
 }
 
+// Special keys handling (arrows)
 void special( int key, int x, int y )
 {
 	switch( key )
@@ -355,10 +352,6 @@ void special( int key, int x, int y )
 		pacman->Turn(270);
         break;
     }
-
-	positionx = eyeX;
-	positiony = eyeY;
-	positionz = eyeZ;
 
 	// odrysowanie okna
     reshape( glutGet( GLUT_WINDOW_WIDTH ), glutGet( GLUT_WINDOW_HEIGHT ) );
@@ -391,15 +384,15 @@ int main(int argc, char** argv)
 	glutSpecialFunc(special);
 	glutKeyboardFunc(keyboard);
 
-	// inicjalizacja obiektow openGL
+	// OpenGL objects initialization:
 	pacman = new Pac(15,2);
 	board = new GameBoard();
 	for (int i = 0; i < ghosts_count; i++)
 	{
 		if (i == 0)
-			ghosts[i] = new GhostRed(15, 10);
+			ghosts[i] = new GhostRed(15, 10, 2);
 		else
-			ghosts[i] = new Ghost(13 + i , 8);
+			ghosts[i] = new Ghost(13 + i , 8, 2);
 	}
 
 	init();

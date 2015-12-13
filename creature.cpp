@@ -3,13 +3,14 @@
 #include "creature.h"
 #include <iostream>
 
-
+// Difference between current position and the tile center.
 static const double CENTER_DIM = 0.05;
 
-Creature::Creature(int x_b, int y_b)
+Creature::Creature(int x_b, int y_b, float z_b)
 {
 	x = x_b;
 	y = y_b;
+	z = z_b;
 	tileX = x_b;
 	tileY = y_b;
 
@@ -37,12 +38,13 @@ bool Creature::isCenterTile()
 	    ((angle == 270) && (y - (int)y < CENTER_DIM)))    ? true : false;
 }
 
+// Basic movement algorithm.
 void Creature::Move()
 {
 	if (moving) 
 	{
-		x +=  speed*cos(M_PI/180*angle); // dodawany jakis staly interwal
-		y +=  speed*sin(M_PI/180*angle);
+		x += speed*cos(M_PI/180*angle); // dodawany jakis staly interwal
+		y += speed*sin(M_PI/180*angle);
 
 		if (!atCenter && isCenterTile())
 		{

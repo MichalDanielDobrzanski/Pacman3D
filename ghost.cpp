@@ -1,6 +1,7 @@
 #define _USE_MATH_DEFINES
 #include <cmath>
 
+#include "basic_gl_shapes.h"
 #include "ghost.h"
 #include "gameboard.h"
 #include "GLUT.H"
@@ -8,7 +9,8 @@
 #include <vector>
 #include <exception>
 
-Ghost::Ghost(int tx, int ty) : Creature(tx,ty)
+
+Ghost::Ghost(int tx, int ty, float tz) : Creature(tx,ty,tz)
 {
 	angle = 180; // initially all ghosts move to the left
 	speed = 0.03;
@@ -21,14 +23,96 @@ Ghost::Ghost(int tx, int ty) : Creature(tx,ty)
 	}
 }
 
-void Ghost::Draw() 
+// Ghost appearance.
+void Ghost::Draw(float phi, float r, float g , float b) 
 {
-	//draw ghost
-	glColor3f(1,1,0);
+	glEnableClientState(GL_NORMAL_ARRAY);
+	glEnableClientState(GL_VERTEX_ARRAY);
 	glPushMatrix();
-		glTranslatef(x,y,0.0);
-		glutSolidCube(0.7);
+		// overall ghost parameters:
+		glTranslatef(x,y,z / 10);
+		glColor3f(r,g,b);
+		glScalef(0.25,0.25,0.05);
+		//glRotatef(phi * 90,0,sin(phi),cos(phi)); // fix this
+		glPushMatrix();
+			glScalef(0.2,0.2,1);
+			glPushMatrix(); // solid body
+				glPushMatrix();
+					glScalef(2,0.5,1);
+					glTranslatef(0,17,0);
+					Block();
+				glPopMatrix();
+				glPushMatrix();
+					glScalef(4,1,1);
+					glTranslatef(0,7,0);
+					Block();
+				glPopMatrix();
+				glPushMatrix();
+					glScalef(6,1.5,1);
+					glTranslatef(0,3,0);
+					Block();
+				glPopMatrix();
+				glPushMatrix();
+					glScalef(7,3,1);
+					Block();
+				glPopMatrix();
+			glPopMatrix();
+			glPushMatrix(); // details
+				glPushMatrix(); // top details
+					glTranslatef(4.5,6.5,0);
+					glScalef(0.5,0.5,1);
+					Block();
+				glPopMatrix();
+				glPushMatrix();
+					glTranslatef(-4.5,6.5,0);
+					glScalef(0.5,0.5,1);
+					Block();
+				glPopMatrix();
+				glPushMatrix(); // bot detals
+					glTranslatef(2,-4,0);
+					glScalef(1,1,1);
+					Block();
+				glPopMatrix();
+				glPushMatrix();
+					glTranslatef(-2,-4,0);
+					glScalef(1,1,1);
+					Block();
+				glPopMatrix();
+				glPushMatrix(); // bot details 2
+					glTranslatef(3.5,-3.5,0);
+					glScalef(0.5,0.5,1);
+					Block();
+				glPopMatrix();
+				glPushMatrix();
+					glTranslatef(-3.5,-3.5,0);
+					glScalef(0.5,0.5,1);
+					Block();
+				glPopMatrix();
+				glPushMatrix(); // bot details 3
+					glTranslatef(6,-3.5,0);
+					glScalef(1,0.5,1);
+					Block();
+				glPopMatrix();
+				glPushMatrix();
+					glTranslatef(-6,-3.5,0);
+					glScalef(1,0.5,1);
+					Block();
+				glPopMatrix();
+					glPushMatrix(); // bot details 4
+					glTranslatef(6.5,-4.5,0);
+					glScalef(0.5,0.5,1);
+					Block();
+				glPopMatrix();
+				glPushMatrix();
+					glTranslatef(-6.5,-4.5,0);
+					glScalef(0.5,0.5,1);
+					Block();
+				glPopMatrix();
+			glPopMatrix();
+		glPopMatrix();
 	glPopMatrix();
+	glDisableClientState(GL_VERTEX_ARRAY);
+	glDisableClientState(GL_NORMAL_ARRAY);
 }
 
 // Not ufeful as for now
@@ -106,7 +190,6 @@ void Ghost::onTileCenter()
 	//std::cout << "Ghost at center of tile: " << tileX << ", " << tileY << std::endl;
 
 	// Dealing with intersections:
-			//		  Front  Left   Right
 	std::vector<int> dist(3,10000);
 
 	if (!WallCheck(angle))

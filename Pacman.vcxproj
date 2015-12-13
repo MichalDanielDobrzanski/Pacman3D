@@ -85,6 +85,7 @@
     <ClCompile Include="pac.cpp" />
   </ItemGroup>
   <ItemGroup>
+    <ClInclude Include="basic_gl_shapes.h" />
     <ClInclude Include="gameboard.h" />
     <ClInclude Include="ghost.h" />
     <ClInclude Include="ghost_red.h" />

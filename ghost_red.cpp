@@ -5,7 +5,7 @@
 #include "glut.h"
 #include <iostream>
 
-GhostRed::GhostRed(int x, int y) : Ghost(x,y)
+GhostRed::GhostRed(int x, int y, float z) : Ghost(x,y,z)
 {
 	index = 1;
 	chase = true;
@@ -18,14 +18,3 @@ GhostRed::GhostRed(int x, int y) : Ghost(x,y)
 }
 
 GhostRed::~GhostRed() { }
-
-void GhostRed::Draw()
-{
-	//draw ghost
-	glColor3f(1,1,0);
-	glPushMatrix();
-		glTranslatef(x,y,0.0);
-		glRotatef(45,0,0,1);
-		glutSolidCube(0.5);
-	glPopMatrix();
-}
