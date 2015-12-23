@@ -2,7 +2,6 @@
 
 class Pac : public Creature {
 
-
 public:
 	double z;
 	Pac(int x, int y);
@@ -23,5 +22,9 @@ public:
 	// info:
 	void onTileChange() override;
 	void onTileCenter() override;
+
+	// next tile prediction:
+	int getNextTileX(int dist);
+	int getNextTileY(int dist);
 
 };

@@ -3,10 +3,11 @@
 
 #include "pac.h"
 #include "gameboard.h"
-#include "GLUT.H"
+#include "glut.h"
 #include <iostream>
 
-static const double CORNERING = 0.4;
+// How far from tile center pacman can change his direction:
+static const double CORNERING = 0.3;
 
 Pac::Pac(int tx, int ty) : Creature(tx,ty,0)
 {
@@ -23,7 +24,6 @@ Pac::~Pac() { }
 void Pac::Draw() 
 {
 	//draw current pacman
-
 	glNormal3f(0.0f, 0.0f, 1.0f);
 	glColor3f(1,1,0); // yellow
 	glPushMatrix();
@@ -166,4 +166,30 @@ void Pac::onTileChange()
 void Pac::onTileCenter()
 {
 	//std::cout << "Packman tile: " << tileX << ", " << tileY << std::endl;
+}
+
+// Predicts the next tile X coord based on distance:
+int Pac::getNextTileX(int dist)
+{
+	if (angle == 0)
+		return tileX + dist;
+	else if (angle == 180)
+		return tileX - dist;
+	if (angle == 90)
+		return tileX;
+	else if (angle == 270)
+		return tileX;
+}
+
+// Predicts the next tile Y coord based on distance:
+int Pac::getNextTileY(int dist)
+{
+	if (angle == 90)
+		return tileY + dist;
+	else if (angle == 270)
+		return tileY - dist;
+	else if (angle == 0)
+		return tileY;
+	else if (angle == 180)
+		return tileY;
 }

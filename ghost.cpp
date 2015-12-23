@@ -10,10 +10,14 @@
 #include <exception>
 
 
-Ghost::Ghost(int tx, int ty, float tz) : Creature(tx,ty,tz)
+Ghost::Ghost(float tr, float tg, float tb, int tx, int ty, float tz) : Creature(tx,ty,tz)
 {
 	angle = 180; // initially all ghosts move to the left
 	speed = 0.03;
+
+	r = tr;
+	g = tg;
+	b = tb;
 
 	if (index == 1)
 	{
@@ -24,7 +28,7 @@ Ghost::Ghost(int tx, int ty, float tz) : Creature(tx,ty,tz)
 }
 
 // Ghost appearance.
-void Ghost::Draw(float phi, float r, float g , float b) 
+void Ghost::Draw(float phi) 
 {
 	glEnableClientState(GL_NORMAL_ARRAY);
 	glEnableClientState(GL_VERTEX_ARRAY);

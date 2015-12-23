@@ -1,0 +1,43 @@
+﻿Build started 2015-12-16 00:09:12.
+     1>Project "D:\OpenGL\Pacman\Pacman.vcxproj" on node 2 (Build target(s)).
+     1>ClCompile:
+         C:\Program Files (x86)\Microsoft Visual Studio 11.0\VC\bin\CL.exe /c /ID:\OpenGL\Pacman /Zi /nologo /W3 /WX- /O2 /Oi /Oy- /GL /D WIN32 /D NDEBUG /D _CONSOLE /D _UNICODE /D UNICODE /Gm- /EHsc /MT /GS /Gy /fp:precise /Zc:wchar_t /Zc:forScope /Fo"Release\\" /Fd"Release\vc110.pdb" /Gd /TP /analyze- /errorReport:prompt creature.cpp gameboard.cpp ghost.cpp ghost_red.cpp main.cpp pac.cpp
+         creature.cpp
+     1>creature.cpp(11): warning C4244: '=' : conversion from 'int' to 'float', possible loss of data
+     1>creature.cpp(12): warning C4244: '=' : conversion from 'int' to 'float', possible loss of data
+     1>creature.cpp(46): warning C4244: '+=' : conversion from 'double' to 'float', possible loss of data
+     1>creature.cpp(47): warning C4244: '+=' : conversion from 'double' to 'float', possible loss of data
+     1>creature.cpp(70): warning C4244: '=' : conversion from 'int' to 'float', possible loss of data
+     1>creature.cpp(71): warning C4244: '=' : conversion from 'int' to 'float', possible loss of data
+     1>creature.cpp(76): warning C4244: '=' : conversion from 'int' to 'float', possible loss of data
+     1>creature.cpp(77): warning C4244: '=' : conversion from 'int' to 'float', possible loss of data
+         gameboard.cpp
+         ghost.cpp
+     1>ghost.cpp(219): warning C4018: '<' : signed/unsigned mismatch
+         ghost_red.cpp
+         main.cpp
+     1>main.cpp(119): warning C4996: 'sprintf': This function or variable may be unsafe. Consider using sprintf_s instead. To disable deprecation, use _CRT_SECURE_NO_WARNINGS. See online help for details.
+                 C:\Program Files (x86)\Microsoft Visual Studio 11.0\VC\include\stdio.h(357) : see declaration of 'sprintf'
+     1>main.cpp(120): warning C4996: 'sprintf': This function or variable may be unsafe. Consider using sprintf_s instead. To disable deprecation, use _CRT_SECURE_NO_WARNINGS. See online help for details.
+                 C:\Program Files (x86)\Microsoft Visual Studio 11.0\VC\include\stdio.h(357) : see declaration of 'sprintf'
+         pac.cpp
+       Link:
+         C:\Program Files (x86)\Microsoft Visual Studio 11.0\VC\bin\link.exe /ERRORREPORT:PROMPT /OUT:"D:\OpenGL\Pacman\Release\Pacman.exe" /INCREMENTAL:NO /NOLOGO /LIBPATH:D:\OpenGL\Pacman glut32.lib glut.lib kernel32.lib user32.lib gdi32.lib winspool.lib comdlg32.lib advapi32.lib shell32.lib ole32.lib oleaut32.lib uuid.lib odbc32.lib odbccp32.lib /MANIFEST /MANIFESTUAC:"level='asInvoker' uiAccess='false'" /manifest:embed /DEBUG /PDB:"D:\OpenGL\Pacman\Release\Pacman.pdb" /SUBSYSTEM:CONSOLE /OPT:REF /OPT:ICF /LTCG /TLBID:1 /DYNAMICBASE /NXCOMPAT /IMPLIB:"D:\OpenGL\Pacman\Release\Pacman.lib" /MACHINE:X86 /SAFESEH:NO Release\Pacman.res
+         Release\creature.obj
+         Release\gameboard.obj
+         Release\ghost.obj
+         Release\ghost_red.obj
+         Release\main.obj
+         Release\pac.obj
+         GLUT32.LIB
+         Generating code
+     1>d:\opengl\pacman\pac.cpp(182): warning C4715: 'Pac::getNextTileX' : not all control paths return a value
+     1>d:\opengl\pacman\pac.cpp(195): warning C4715: 'Pac::getNextTileY' : not all control paths return a value
+     1>d:\opengl\pacman\ghost.cpp(138): warning C4715: 'Ghost::WallCheck' : not all control paths return a value
+         Finished generating code
+         Pacman.vcxproj -> D:\OpenGL\Pacman\Release\Pacman.exe
+     1>Done Building Project "D:\OpenGL\Pacman\Pacman.vcxproj" (Build target(s)).
+
+Build succeeded.
+
+Time Elapsed 00:00:05.93

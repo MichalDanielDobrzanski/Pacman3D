@@ -5,7 +5,7 @@
 #include "glut.h"
 #include <iostream>
 
-GhostRed::GhostRed(int x, int y, float z) : Ghost(x,y,z)
+GhostRed::GhostRed(int x, int y, float z) : Ghost(1,1,0,x,y,z)
 {
 	index = 1;
 	chase = true;

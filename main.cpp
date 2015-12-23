@@ -23,6 +23,11 @@ bool pacFollowed = false;
 
 // ghosts
 Ghost *ghosts[ghosts_count];
+float ghostsColors[] = { 1.0, 0.0,   0.0,   // Blinky
+						 1.0, 0.753, 0.796, // Pinky
+						 0.0, 1.0,   1.0,   // Inky
+						 1.0, 0.647, 0.0  // Clyde
+					   };
 
 // basic game information
 std::string infoText[] = 
@@ -56,6 +61,9 @@ GLdouble eyeX = 0;
 GLdouble eyeY = 0;
 GLdouble eyeZ = 0;
 
+// Lighting:
+float lightIntensity = 1;
+
 void init()
 {   
 	// ustaw intensywnosc swaitla i kolor
@@ -63,27 +71,43 @@ void init()
 	// https://www.youtube.com/watch?v=gFZqzVQrw84 // swietny opis rodzajow swiatel
 	// https://www.youtube.com/watch?v=oVwH8KV1xnY // najlepsze
 
-	// intialization of 3D rendering
-	glEnable(GL_DEPTH_TEST);
-	glEnable(GL_COLOR_MATERIAL);
-	glEnable(GL_LIGHTING);
-    glEnable(GL_LIGHT0);
-	glEnable(GL_LIGHT1);
+	// General OpenGL configirations:
+	glEnable(GL_DEPTH_TEST); // intialization of 3D rendering
+	glEnable(GL_COLOR_MATERIAL); // object material properties enabled
+	glColorMaterial(GL_FRONT, GL_AMBIENT_AND_DIFFUSE); // set material properties which will be assigned by glColor
 	glEnable(GL_NORMALIZE); // Automatically normalize normals (vectors of surfaces )
-	glShadeModel(GL_SMOOTH); // smooth shading
+	
+	glEnable(GL_LIGHTING); // general lighting enabled
+	glEnable(GL_LIGHT0);
+	
+	// Create light components
+	GLfloat ambientLight[] = { 0.2f, 0.2f, 0.2f, 1.0f };
+	GLfloat diffuseLight[] = { 0.8f, 0.8f, 0.8, 1.0f };
+	GLfloat specularLight[] = { 0.5f, 0.5f, 0.5f, 1.0f };
+	GLfloat position[] = { GameBoard::CENTER_X, GameBoard::CENTER_Y, 4.0f, 1.0f };
+ 
+	// Assign created components to GL_LIGHT0
+	glLightfv(GL_LIGHT0, GL_AMBIENT, ambientLight);
+	glLightfv(GL_LIGHT0, GL_DIFFUSE, diffuseLight);
+	glLightfv(GL_LIGHT0, GL_SPECULAR, specularLight);
+	glLightfv(GL_LIGHT0, GL_POSITION, position);
 
-	// Add ambient light
-    GLfloat ambientColor[] = { 0.2, 0.2,  0.2, 1.0 };
-	glLightModelfv( GL_LIGHT_MODEL_AMBIENT, ambientColor); // ambient lights everywhere with the same amount 
+	//glLightf(GL_LIGHT0, GL_CONSTANT_ATTENUATION, 1.0);
+	//glLightf(GL_LIGHT0, GL_LINEAR_ATTENUATION, 0.6);
+	//glLightf(GL_LIGHT0, GL_QUADRATIC_ATTENUATION, 0.5);
+
+	// Add global ambient light
+    //GLfloat ambientColor[] = { 0.5, 0.5,  0.5, 1.0 };
+	//glLightModelfv( GL_LIGHT_MODEL_AMBIENT, ambientColor); // ambient lights everywhere with the same amount 
    
-	GLfloat mat_ambient[]    = { 1.0, 1.0,  1.0, 1.0 };
-    GLfloat mat_specular[]   = { 1.0, 1.0,  1.0, 1.0 };
+	GLfloat mat_ambient[]  = { 1.0, 1.0,  1.0, 1.0 };
+    GLfloat mat_specular[] = { 1.0, 1.0,  1.0, 1.0 };
 
-	glMaterialfv( GL_FRONT, GL_AMBIENT, mat_ambient );
-    glMaterialfv( GL_FRONT, GL_SPECULAR, mat_specular );
-    glMaterialf( GL_FRONT, GL_SHININESS, 50.0 );
-	// parametry cieniowania (flat daje taki sam kolor)
+	//glMaterialfv( GL_FRONT, GL_AMBIENT, mat_ambient );
+    //glMaterialfv( GL_FRONT, GL_SPECULAR, mat_specular );
+    //glMaterialf( GL_FRONT_AND_BACK, GL_SHININESS, 10.0 );
 
+	glShadeModel(GL_SMOOTH); // smooth shading
     glDepthFunc( GL_LESS );
 }
 
@@ -153,18 +177,10 @@ void display()
 	glClear( GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT ); // czysc bufory
 
 	// lighting stuff:
-
-	// Add positioned light
-	GLfloat lightColor0[] = { 0.5f, 0.5f, 0.5f, 1.0f};
-	GLfloat lightPos0[] = { pacman->x, pacman->y, 2.0f, 1.0f };
-	glLightfv(GL_LIGHT0, GL_DIFFUSE,  lightColor0);
-    glLightfv(GL_LIGHT0, GL_POSITION, lightPos0);
-
-	// Add directed light:
-	GLfloat lightColor1[] = { 0.5f, 0.2f, 0.2f, 1.0f };
-	GLfloat lightPos1[] = {GameBoard::CENTER_X, GameBoard::CENTER_Y, 5.0f, 0.0f };
-	glLightfv(GL_LIGHT1, GL_DIFFUSE,  lightColor1);
-    glLightfv(GL_LIGHT1, GL_POSITION, lightPos1);
+	glPushMatrix();
+		GLfloat lightPos0[] = { pacman->x, pacman->y, 4.0f, 1.0f };
+		glLightfv(GL_LIGHT0, GL_POSITION, lightPos0);
+	glPopMatrix();
 
 	// camera movement stuff:
 	// http://gamedev.stackexchange.com/questions/43588/how-to-rotate-camera-centered-around-the-cameras-position
@@ -200,31 +216,63 @@ void display()
 		board->coinsCount--;
 
 	// ghosts movement algorithms:
-	if (((GhostRed*)ghosts[0])->chase)
+	// Blinky:
+	if (ghosts[0]->chase)
 	{
 		// Blinky targets packman current tile coordinates while in chase mode
-		(ghosts[0])->targetTileX = pacman->tileX;
-		(ghosts[0])->targetTileY = pacman->tileY;
+		ghosts[0]->targetTileX = pacman->tileX;
+		ghosts[0]->targetTileY = pacman->tileY;
 	}
-	//for (int i = 0; i < ghosts_count; i++)
+	ghosts[0]->Move();
+
+	// Pinky:
+	if (ghosts[1]->chase)
 	{
-		ghosts[0]->Move();
-		//ghosts[i]->WallStop();
+		// Pinky targets packman current tile + 4 ahead coordinates while in chase mode
+		ghosts[1]->targetTileX = pacman->getNextTileX(4);
+		ghosts[1]->targetTileY = pacman->getNextTileY(4);
 	}
+	ghosts[1]->Move();
+
+	// Inky:
+	if (ghosts[2]->chase)
+	{
+		// Uses pacman +2 next coordinates and blinky's position
+		ghosts[2]->targetTileX = pacman->getNextTileX(2) + (pacman->getNextTileX(2) - ghosts[0]->tileX);
+		ghosts[2]->targetTileY = pacman->getNextTileY(2) + (pacman->getNextTileY(2) - ghosts[0]->tileY);
+	}
+	ghosts[2]->Move();
+
+	// Clyde:
+	if (ghosts[3]->chase)
+	{
+		// If distance from pac > 8 then target him. Else go where Clyde's scatter points is.
+		int distSquared = abs(ghosts[3]->tileX - pacman->tileX) * abs(ghosts[3]->tileX - pacman->tileX) 
+			+ abs(ghosts[3]->tileY - pacman->tileY) * abs(ghosts[3]->tileY - pacman->tileY);
+		//std::cout << "Clyde dist to pacman: " << distSquared << std::endl;
+		if (distSquared >= 64)
+		{
+			ghosts[3]->targetTileX = pacman->tileX;
+			ghosts[3]->targetTileY = pacman->tileY;
+		}
+		else
+		{
+			ghosts[3]->targetTileX = ghosts[3]->scatterTileX;
+			ghosts[3]->targetTileY = ghosts[3]->scatterTileY;
+		}
+	}
+	ghosts[3]->Move();
+
 
 	// actual pacman, ghosts and board drawing
-	glPushMatrix();
-		pacman->Draw();
-		board->Draw();
-		ghosts[0]->Draw(phi,1,0,0); // Blinky
-		ghosts[1]->Draw(phi,1,0.753f,0.796f); // Pinky
-		ghosts[2]->Draw(phi,0,1,1); // Inky
-		ghosts[3]->Draw(phi,1,0.647f,0); // Clyde
-	glPopMatrix();
-
+	board->Draw();
+	pacman->Draw();
+	ghosts[0]->Draw(phi); // Blinky
+	ghosts[1]->Draw(phi); // Pinky
+	ghosts[2]->Draw(phi); // Inky
+	ghosts[3]->Draw(phi); // Clyde
 	// screen information
 	DrawInfo();
-
 
     glFlush(); // wyczysc wszystkie bufory. Standard zaleca wywolywanie tej komendy.
 	glutSwapBuffers();
@@ -233,28 +281,14 @@ void display()
 
 void reshape(GLsizei w, GLsizei h)
 {
-    if( h > 0 && w > 0 ) {
     glViewport( 0, 0, w, h );
     glMatrixMode( GL_PROJECTION );
     glLoadIdentity();
 	        
-	GLdouble aspect = 1;
-	if( h > 0 )
-         aspect = w /( GLdouble ) h;
+	GLdouble aspect = w /( GLdouble ) h;
    
     // rzutowanie perspektywiczne
-    //gluPerspective( 90, aspect, 0.1, 50.0 );
-
-    //  if( w <= h ) {
-    //     //glOrtho( -2.25, 2.25, -2.25*h/w, 2.25*h/w, -10.0, 10.0 ); // parametry obcinania // 2D RENDER!
-	//glFrustum(-20.25, 20.25, -20.25, 20.25, 11, 50);
-    //  }
-    //  else {
-    //     //glOrtho( -2.25*w/h, 2.25*w/h, -2.25, 2.25, -10.0, 10.0 );
-		  //glFrustum(-2.25*w / h, 2.25*w / h, -2.25, 2.25, 1, 10);
-    //  }
-    //  glTranslatef(0, 0, -2.5);
-    }
+	gluPerspective( 90, 1, 5, 30.0 );
 }
 
 void keyboard(unsigned char key, int x, int y)
@@ -320,6 +354,14 @@ void keyboard(unsigned char key, int x, int y)
 			theta = 0;
 		}
 		break;
+
+	case 't':
+			
+	break;
+
+	case 'g':
+
+	break;
 	}
 }
 
@@ -366,7 +408,7 @@ int main(int argc, char** argv)
 {
 	glutInit( &argc, argv );
 	glutInitDisplayMode(GLUT_DOUBLE | GLUT_RGBA | GLUT_DEPTH); // pojedyncze buforowanie oraz bufor glebokosci ustawiamy
-	glutInitWindowPosition( 0, 0 );
+	glutInitWindowPosition( 100, 10 );
 	glutInitWindowSize( 1000, 1000 );
 	glutCreateWindow( "PackMan" ); // zainicjowany kontekst openGL'owy
 
@@ -387,13 +429,26 @@ int main(int argc, char** argv)
 	// OpenGL objects initialization:
 	pacman = new Pac(15,2);
 	board = new GameBoard();
+
+	// Ghosts initial configuration:
 	for (int i = 0; i < ghosts_count; i++)
 	{
-		if (i == 0)
-			ghosts[i] = new GhostRed(15, 10, 2);
-		else
-			ghosts[i] = new Ghost(13 + i , 8, 2);
+		ghosts[i] = new Ghost(ghostsColors[3*i],ghostsColors[3*i + 1],ghostsColors[3*i + 2], 13 + i, 10, 2);
 	}
+
+	// Blinky:
+	ghosts[0]->scatterTileX = 0;
+	ghosts[0]->scatterTileY = GameBoard::DIM_Y + 2;
+	// Pinky:
+	ghosts[1]->scatterTileX = GameBoard::DIM_X;
+	ghosts[1]->scatterTileY = GameBoard::DIM_Y + 2;
+	// Inky:
+	ghosts[1]->scatterTileX = 0;
+	ghosts[1]->scatterTileY = -2;
+	// Clyde:
+	ghosts[3]->scatterTileX = 0;
+	ghosts[3]->scatterTileY = -2;
+
 
 	init();
 

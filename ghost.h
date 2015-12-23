@@ -1,4 +1,4 @@
-#include <utility>
+//#include <utility>
 #include "creature.h"
 
 class Ghost : public Creature {
@@ -11,7 +11,7 @@ public:
 	bool frightened;
 	bool chase;
 	bool scatter;
-	Ghost(int x, int y, float z);
+	Ghost(float r, float g, float b, int x, int y, float z);
 
 	// scattering functionality:
 	int scatterTileX;
@@ -23,7 +23,10 @@ public:
 	int TargetPythagoras(int agle); 
 
 	//  visual appearance:
-	void Draw(float phi, float r, float g, float b); // unique ghost look
+	float r;
+	float g;
+	float b;
+	void Draw(float phi); // unique ghost look
 
 	// map location and inference mechanisms:	
 	void onTileChange() override;

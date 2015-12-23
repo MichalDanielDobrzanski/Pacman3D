@@ -70,4 +70,10 @@
       <Filter>Resource Files</Filter>
     </Image>
   </ItemGroup>
+  <ItemGroup>
+    <None Include="glut32.dll" />
+  </ItemGroup>
+  <ItemGroup>
+    <Library Include="GLUT32.LIB" />
+  </ItemGroup>
 </Project>
